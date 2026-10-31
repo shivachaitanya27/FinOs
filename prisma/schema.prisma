@@ -1,0 +1,262 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String               @id @default(cuid())
+  email         String               @unique
+  passwordHash  String?
+  name          String
+  role          String               @default("OWNER")
+  avatarUrl     String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  memberships   BusinessMembership[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+}
+
+model Business {
+  id                    String                 @id @default(cuid())
+  name                  String
+  legalName             String?
+  taxId                 String? // GSTIN e.g. 29AABCU9603R1ZM
+  panNumber             String?
+  currency              String                 @default("INR")
+  industry              String?
+  fiscalYearStart       String                 @default("APRIL") // Indian Financial Year: April - March
+  minimumCashBalance    Float                  @default(50000.0) // Stage 4: Configurable minimum cash balance threshold
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  memberships           BusinessMembership[]
+  accounts              FinancialAccount[]
+  transactions          Transaction[]
+  importedFiles         ImportedFile[]
+  reconciliationRecords ReconciliationRecord[]
+  riskAlerts            RiskAlert[]
+  aiRecommendations     AIRecommendation[]
+  chatConversations     ChatConversation[]
+  forecasts             Forecast[]
+  auditLogs             AuditLog[]
+  notifications         Notification[]
+}
+
+model BusinessMembership {
+  id         String   @id @default(cuid())
+  userId     String
+  businessId String
+  role       String   @default("OWNER") // OWNER, ADMIN, ACCOUNTANT, VIEWER
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+}
+
+model FinancialAccount {
+  id             String        @id @default(cuid())
+  businessId     String
+  name           String // e.g. "HDFC Current Account", "ICICI Bank", "Razorpay Inflow"
+  accountType    String // "BANK", "PAYMENT_GATEWAY", "CREDIT_CARD", "CASH", "WALLET"
+  accountNumber  String? // e.g. "50200034981290"
+  bankName       String? // "HDFC Bank Ltd", "ICICI Bank"
+  ifscCode       String? // "HDFC0001234"
+  openingBalance Float         @default(0.0)
+  currentBalance Float         @default(0.0)
+  currency       String        @default("INR")
+  isDefault      Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id              String   @id @default(cuid())
+  businessId      String
+  accountId       String?
+  date            DateTime
+  description     String
+  amount          Float
+  type            String   // "REVENUE", "EXPENSE", "TRANSFER"
+  category        String   // "Sales & Services", "Payroll & Salaries", "Cloud & Software", "Office Rent", "Marketing & Growth", "Legal & Accounting", "Logistics", "Taxes & Duties", "Miscellaneous"
+  status          String   @default("COMPLETED") // "COMPLETED", "PENDING", "RECONCILED", "UNMATCHED"
+  paymentMethod   String?  // "UPI", "NEFT", "RTGS", "IMPS", "CREDIT_CARD", "DEBIT_CARD", "NETBANKING", "CASH"
+  referenceNumber String?  // UTR / Transaction ID / Invoice No
+  dueDate         DateTime? // Stage 4: Due date for pending receivables/payables
+  counterparty    String?  // Client or Vendor name
+  notes           String?
+  source          String   @default("MANUAL") // "BANK_STATEMENT", "TALLY", "ZOHO_BOOKS", "MANUAL", "GENERIC_IMPORT"
+  importStatus    String   @default("POSTED") // "POSTED", "PENDING", "FLAGGED", "RECONCILED"
+  classification  String?  // "OPERATING_REVENUE", "OPERATING_EXPENSE", "INTERNAL_TRANSFER", "LOAN_PROCEEDS", "LOAN_REPAYMENT", "REFUND_RECEIVED", "REFUND_ISSUED"
+  importedFileId  String?
+  reconciledWithId String? // ID of matched paired transaction
+  duplicateOfId    String? // ID of original transaction if confirmed duplicate
+  isUnusual       Boolean  @default(false)
+  isDuplicate     Boolean  @default(false)
+  isDemo          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  business              Business               @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  account               FinancialAccount?      @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  importedFile          ImportedFile?          @relation(fields: [importedFileId], references: [id], onDelete: SetNull)
+  reconciliationRecords ReconciliationRecord[]
+}
+
+model ImportedFile {
+  id           String        @id @default(cuid())
+  businessId   String
+  fileName     String
+  fileType     String        // "CSV", "XLSX", "XLS", "PDF", "MT940"
+  fileSize     Int           // in bytes
+  rowCount     Int           @default(0)
+  validCount   Int           @default(0)
+  invalidCount Int           @default(0)
+  source       String        @default("BANK_STATEMENT") // "BANK_STATEMENT", "TALLY", "ZOHO_BOOKS", "GENERIC"
+  fileHash     String?       // SHA-256 hash for duplicate file prevention
+  status       String        @default("PROCESSED") // "PROCESSED", "PENDING", "FAILED"
+  accountId    String?
+  uploadedAt   DateTime      @default(now())
+
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model ReconciliationRecord {
+  id                      String    @id @default(cuid())
+  businessId              String
+  transactionId           String?   // Bank or primary transaction ID
+  accountingTransactionId String?   // Matched accounting transaction ID
+  bankStatementRef        String?
+  matchConfidence         Float     @default(1.0)
+  matchScore              Float     @default(100.0) // 0 to 100
+  matchStatus             String    // "MATCHED", "UNMATCHED", "SUGGESTED", "MANUAL_REVIEW", "APPROVED", "REJECTED", "DUPLICATE_SUSPECT"
+  matchReasons            String?   // JSON breakdown of scoring evidence
+  differenceAmount        Float     @default(0.0)
+  matchedAt               DateTime  @default(now())
+  reviewedAt              DateTime?
+  reviewedBy              String?
+  notes                   String?
+
+  business    Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  transaction Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+}
+
+model RiskAlert {
+  id                   String    @id @default(cuid())
+  businessId           String
+  title                String
+  description          String
+  severity             String    // "CRITICAL", "HIGH", "MEDIUM", "LOW"
+  category             String    // "CASH_FLOW", "UNUSUAL_EXPENSE", "TAX_COMPLIANCE", "DUPLICATE_PAYMENT", "VENDOR_ANOMALY", "CATEGORY_SPIKE", "FREQUENCY_ANOMALY", "OVERDUE_RECEIVABLE", "UNMATCHED_TRANSACTION"
+  status               String    @default("ACTIVE") // "ACTIVE", "REVIEWED", "RESOLVED", "DISMISSED"
+  amount               Float?
+  relatedCategory      String?
+  relatedTransactionId String?
+  evidence             String?   // Detailed JSON/text metrics explaining detection
+  recommendedAction    String?   // Practical actionable guidance
+  reviewNotes          String?   // User review notes
+  reviewedAt           DateTime?
+  resolvedAt           DateTime?
+  reviewedBy           String?
+  detectedAt           DateTime  @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model AIRecommendation {
+  id               String    @id @default(cuid())
+  businessId       String
+  title            String
+  description      String
+  category         String   // "CASH_OPTIMIZATION", "TAX_SAVING", "VENDOR_RENEGOTIATION", "WORKING_CAPITAL", "SUBSCRIPTION_AUDIT"
+  impact           String   // "HIGH", "MEDIUM", "LOW"
+  estimatedSavings Float?
+  actionType       String   // "INVESTIGATE", "RENEGOTIATE", "CANCEL_SUB", "EXPEDITE_COLLECTION"
+  suggestedAction  String?
+  evidence         String?  // JSON string containing supporting verified financial figures
+  notes            String?  // User notes
+  status           String   @default("PENDING") // "PENDING", "APPLIED", "DISMISSED"
+  appliedAt        DateTime?
+  createdAt        DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model ChatConversation {
+  id         String        @id @default(cuid())
+  businessId String
+  userId     String?       // User who created the conversation
+  title      String        @default("Financial Strategy Chat")
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  messages   ChatMessage[]
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model ChatMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String   // "user", "assistant", "system"
+  content        String
+  createdAt      DateTime @default(now())
+
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Forecast {
+  id              String   @id @default(cuid())
+  businessId      String
+  forecastDate    DateTime
+  metric          String   // "REVENUE", "EXPENSES", "CASH_FLOW"
+  period          String?  // "7_DAYS", "30_DAYS", "3_MONTHS", "6_MONTHS"
+  predictedValue  Float
+  lowerBound      Float
+  upperBound      Float
+  confidenceScore Float    @default(0.92)
+  modelUsed       String   @default("Prophet-FinOS-v1")
+  metadata        String?  // JSON string storing assumptions, historical days, etc.
+  createdAt       DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  businessId String
+  userId     String?
+  action     String   // "LOGIN", "DEMO_DATA_LOAD", "TRANSACTION_CREATED", "RECONCILED", "REPORT_GENERATED"
+  entityType String   // "TRANSACTION", "BUSINESS", "ACCOUNT", "REPORT"
+  entityId   String?
+  details    String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Notification {
+  id         String    @id @default(cuid())
+  businessId String?
+  userId     String?
+  title      String
+  message    String
+  type       String    @default("INFO") // "INFO", "WARNING", "SUCCESS", "CRITICAL"
+  isRead     Boolean   @default(false)
+  linkUrl    String?
+  createdAt  DateTime  @default(now())
+
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  business Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}

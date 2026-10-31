@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --radius: 0.75rem;
+}
+
+body {
+  background-color: #F8FAFC;
+  color: #0F172A;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 165, 233, 0.12), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(56, 189, 248, 0.08), transparent 60%),
+    radial-gradient(ellipse 50% 30% at 10% 90%, rgba(2, 132, 199, 0.05), transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Custom subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.8);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.5);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.8);
+}
+
+/* Premium Light Glassmorphic Classes */
+.glass-widget {
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 #ffffff;
+  border-radius: 1rem;
+}
+
+.glass-widget:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 14px 35px -10px rgba(14, 165, 233, 0.15), inset 0 1px 0 0 #ffffff;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 8px 30px 0 rgba(14, 165, 233, 0.06);
+}
+
+.glass-panel-elevated {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.12), 0 0 20px -5px rgba(56, 189, 248, 0.1);
+}
+
+/* Interactive Glass Sheen Border */
+.glass-sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-sheen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.6), #ffffff, rgba(56, 189, 248, 0.6), transparent);
+  pointer-events: none;
+}
+
+/* Sky Brand Glow Effects */
+.glow-sky {
+  box-shadow: 0 0 30px -5px rgba(14, 165, 233, 0.25);
+}
+
+.glow-teal {
+  box-shadow: 0 0 25px -5px rgba(20, 184, 166, 0.2);
+}
+
+.glow-blue {
+  box-shadow: 0 0 25px -5px rgba(37, 99, 235, 0.2);
+}
+
+/* Smooth transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Print Styles for Executive Financial Reports */
+@page {
+  margin: 12mm 15mm;
+  size: A4 portrait;
+}
+
+@media print {
+  body {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #0f172a !important;
+    font-size: 10pt;
+  }
+
+  /* Hide navigation, actions, floating widgets during print */
+  aside,
+  header,
+  nav,
+  button,
+  .no-print,
+  [data-print-hide="true"] {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .glass-panel,
+  .glass-widget {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .text-white {
+    color: #0f172a !important;
+  }
+
+  .text-slate-400 {
+    color: #64748b !important;
+  }
+}
