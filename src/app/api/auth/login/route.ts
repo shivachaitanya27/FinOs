@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, ensureDatabaseReady } from "@/lib/prisma";
 import { seedDemoData } from "@/lib/seed-data";
-import { execSync } from "child_process";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,10 +21,9 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (queryErr: any) {
-      console.warn("Database error during login, attempting schema auto-sync:", queryErr.message);
+      console.warn("Database error during login, bootstrapping database:", queryErr.message);
+      ensureDatabaseReady(true);
       try {
-        execSync("npx prisma db push --skip-generate", { stdio: "pipe" });
-        await seedDemoData();
         user = await prisma.user.findUnique({
           where: { email },
           include: {
@@ -35,7 +33,7 @@ export async function POST(request: NextRequest) {
           },
         });
       } catch (recoveryErr) {
-        console.error("Auto-sync recovery error:", recoveryErr);
+        console.error("Database recovery error:", recoveryErr);
       }
     }
 

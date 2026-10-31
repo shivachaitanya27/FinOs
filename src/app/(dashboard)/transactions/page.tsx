@@ -177,9 +177,6 @@ export default function TransactionsPage() {
               <Receipt className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Financial Transactions Ledger
             </h1>
-            <Badge variant="purple" className="font-bold text-[10px]">
-              Stage 2
-            </Badge>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
               <Lock className="h-3 w-3 text-purple-600 dark:text-purple-400" />
               Immutable Ledger • Read-Only

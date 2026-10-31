@@ -173,7 +173,7 @@ export function Header({ onToggleMobileMenu, onRefreshData }: HeaderProps) {
 
         <div className="hidden sm:flex items-center gap-2">
           <Badge variant="purple" className="px-2.5 py-0.5 font-bold">
-            Stage 6 Production
+            Live Production
           </Badge>
           <span className="text-xs text-slate-500 dark:text-slate-400 hidden md:inline">
             Indian Financial Accounting Standard (Ind AS)

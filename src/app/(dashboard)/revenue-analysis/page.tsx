@@ -75,9 +75,6 @@ export default function RevenueAnalysisPage() {
               <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Revenue Analysis & Top-Line Performance
             </h1>
-            <Badge variant="purple" className="text-[10px] font-bold">
-              Stage 2
-            </Badge>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Deterministic accounting revenue analysis derived strictly from recognized operating turnover.

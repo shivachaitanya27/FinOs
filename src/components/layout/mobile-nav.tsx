@@ -22,26 +22,27 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
     <div className="fixed inset-0 z-50 lg:hidden">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-950/70 dark:bg-black/80 backdrop-blur-md transition-opacity"
+        className="fixed inset-0 bg-slate-950/70 dark:bg-black/80 backdrop-blur-sm transition-opacity duration-200"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className="fixed inset-y-0 left-0 w-72 bg-white/95 dark:bg-obsidian-900/95 border-r border-slate-200 dark:border-white/10 p-5 flex flex-col shadow-2xl backdrop-blur-2xl animate-in slide-in-from-left duration-200">
+      <div className="fixed inset-y-0 left-0 w-72 bg-white/98 dark:bg-obsidian-900/98 border-r border-slate-200 dark:border-white/10 p-5 flex flex-col shadow-2xl backdrop-blur-xl animate-in slide-in-from-left duration-200 mobile-gpu-accelerate">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/10">
           <Link href="/" onClick={onClose} className="block">
             <FinOSLogo size="sm" />
           </Link>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-obsidian-800 transition-colors"
+            aria-label="Close navigation"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-obsidian-800 transition-colors"
           >
             <X className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </button>
         </div>
 
         {/* Links */}
-        <div className="flex-1 overflow-y-auto py-4 space-y-1">
+        <div className="flex-1 overflow-y-auto py-4 space-y-1 overscroll-contain">
           {navigationItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -51,7 +52,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200",
+                  "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors duration-150 active:scale-[0.98]",
                   isActive
                     ? "bg-purple-50 dark:bg-purple-950/50 text-purple-800 dark:text-purple-200 font-bold border-l-2 border-purple-600 shadow-2xs"
                     : "text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-slate-50 dark:hover:bg-obsidian-800"
@@ -66,9 +67,9 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                   />
                   <span>{item.name}</span>
                 </div>
-                <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
-                  {item.stage}
-                </span>
+                {isActive && (
+                  <div className="h-1.5 w-1.5 rounded-full bg-purple-600 dark:bg-purple-400" />
+                )}
               </Link>
             );
           })}

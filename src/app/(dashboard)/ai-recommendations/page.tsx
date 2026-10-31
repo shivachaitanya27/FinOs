@@ -164,7 +164,6 @@ export default function AIRecommendationsPage() {
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Autonomous AI Financial Copilot</h1>
-                <Badge variant="purple" className="font-bold text-[10px]">Stage 5</Badge>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
                 Deterministic algorithmic recommendations trained on verified ledger velocity, cash runway, and risk alerts.

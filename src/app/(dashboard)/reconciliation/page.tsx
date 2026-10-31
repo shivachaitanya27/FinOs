@@ -213,9 +213,6 @@ export default function ReconciliationPage() {
               <Scale className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Automated Bank Reconciliation & Audit Engine
             </h1>
-            <Badge variant="purple" className="text-[10px] font-bold">
-              Stage 3
-            </Badge>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             2-way algorithmic matching between bank statement feeds and accounting ledgers (Tally, Zoho Books) with duplicate protection and confidence scoring.

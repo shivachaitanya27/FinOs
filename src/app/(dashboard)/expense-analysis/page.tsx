@@ -74,9 +74,6 @@ export default function ExpenseAnalysisPage() {
               <TrendingDown className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Expense Analysis & Run-Rate Auditing
             </h1>
-            <Badge variant="purple" className="text-[10px] font-bold">
-              Stage 2
-            </Badge>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Deterministic categorization and burn-rate analysis from bank debits, payroll, and vendor disbursements.

@@ -28,8 +28,17 @@ async function runStage5TestSuite() {
   } = await import("../src/lib/ai-service.ts");
   const { generateFinancialRecommendations } = await import("../src/lib/recommendation-engine.ts");
 
-  // Step 0: Ensure demo business exists
-  const bizA = await prisma.business.findFirst({ include: { accounts: true } });
+  // Step 0: Ensure demo business exists (prefer BharatTech with full dataset)
+  let bizA = await prisma.business.findFirst({
+    where: { name: { contains: "BharatTech" } },
+    include: { accounts: true },
+  });
+  if (!bizA) {
+    bizA = await prisma.business.findFirst({
+      where: { transactions: { some: {} } },
+      include: { accounts: true },
+    });
+  }
   if (!bizA) throw new Error("No business found in database. Seed demo data first.");
 
   console.log(`▶ Connected to Target Business: "${bizA.name}" (ID: ${bizA.id})`);

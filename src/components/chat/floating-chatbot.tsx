@@ -334,7 +334,6 @@ export function FloatingChatbot() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-xs text-slate-900 dark:text-white">FinOS AI Assistant</span>
-                  <Badge variant="purple" className="text-[9px] px-1.5 py-0 font-bold">Stage 5</Badge>
                 </div>
                 <p className="text-[10px] text-purple-700 dark:text-purple-400 font-medium">Verified Financial Intelligence</p>
               </div>

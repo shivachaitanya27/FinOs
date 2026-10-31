@@ -236,11 +236,42 @@ async function runTestSuite() {
 
   const results = [];
 
-  // Identify business
-  const business = await prisma.business.findFirst({
+  // Identify business with accounts, or fall back to first business
+  let business = await prisma.business.findFirst({
+    where: { accounts: { some: {} } },
     include: { accounts: true },
   });
+  if (!business) {
+    business = await prisma.business.findFirst({ include: { accounts: true } });
+  }
   assert(business, "Database must have an initialized business.");
+
+  if (business.accounts.length === 0) {
+    const acc1 = await prisma.account.create({
+      data: {
+        name: "HDFC Current Account",
+        type: "BANK",
+        accountNumber: "50200012345678",
+        bankName: "HDFC Bank",
+        currency: "INR",
+        balance: 1000000,
+        businessId: business.id,
+      },
+    });
+    const acc2 = await prisma.account.create({
+      data: {
+        name: "ICICI Operational Account",
+        type: "BANK",
+        accountNumber: "000405001234",
+        bankName: "ICICI Bank",
+        currency: "INR",
+        balance: 500000,
+        businessId: business.id,
+      },
+    });
+    business.accounts = [acc1, acc2];
+  }
+
   console.log(`Target Business: "${business.name}" (${business.id})`);
   console.log(`Connected Accounts: ${business.accounts.length}\n`);
 

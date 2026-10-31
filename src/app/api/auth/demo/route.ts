@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, ensureDatabaseReady } from "@/lib/prisma";
 import { seedDemoData } from "@/lib/seed-data";
-import { execSync } from "child_process";
 
 export async function POST() {
   try {
@@ -17,12 +16,8 @@ export async function POST() {
         },
       });
     } catch (dbErr: any) {
-      console.warn("Database or tables not initialized, running auto-sync:", dbErr.message);
-      try {
-        execSync("npx prisma db push --skip-generate", { stdio: "pipe" });
-      } catch (pushErr) {
-        console.error("Prisma db push fallback error:", pushErr);
-      }
+      console.warn("Database or tables not initialized, bootstrapping database:", dbErr.message);
+      ensureDatabaseReady(true);
     }
 
     // If user not found or memberships empty, automatically seed fresh demo data

@@ -134,16 +134,16 @@ export default function DashboardOverviewPage() {
           </div>
         </div>
         <h3 className="text-xl font-bold text-white mb-2">
-          Initialize FinOS Stage 1 Ledger
+          Initialize FinOS Ledger
         </h3>
         <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-          No financial records were found in the local SQLite database. Populate the
+          No financial records were found in the database. Populate the
           environment with realistic Indian enterprise demo data (GST, HDFC bank accounts,
           invoices, and risk alerts).
         </p>
         <Button variant="teal" size="lg" onClick={handleReloadDemo}>
           <RefreshCw className="h-4 w-4 mr-2" />
-          Load Demo Data (Stage 1)
+          Load Enterprise Demo Data
         </Button>
       </div>
     );
@@ -160,9 +160,6 @@ export default function DashboardOverviewPage() {
             <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
               {business?.name || "BharatTech Solutions"}
             </h1>
-            <Badge variant="purple" className="font-bold text-[10px]">
-              Stage 1
-            </Badge>
             <Badge variant="green" className="gap-1.5 font-bold px-2.5 py-0.5 text-[10px]">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
               DEMO SANDBOX – Live Ledger

@@ -409,9 +409,6 @@ export default function DataManagementPage() {
               <Database className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Financial Data Management & Ingestion
             </h1>
-            <Badge variant="purple" className="font-bold text-[10px]">
-              Stage 2
-            </Badge>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Import statements from Indian banks, Tally Prime, and Zoho Books with automated mapping, validation, and deterministic metrics.

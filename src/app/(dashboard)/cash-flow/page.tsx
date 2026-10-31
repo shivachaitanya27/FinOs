@@ -245,7 +245,6 @@ export default function CashFlowForecastDashboard() {
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Direct Cash Flow Forecasting Engine</h1>
-                <Badge variant="purple" className="font-bold text-[10px]">Stage 4</Badge>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
                 Deterministic liquidity modeling: historical run-rates, verified bank reserves, and scheduled receivables/payables.

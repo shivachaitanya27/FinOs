@@ -178,7 +178,6 @@ export default function ReportsPage() {
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
             <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Financial Reports & Audit Packs</h1>
-            <Badge variant="purple" className="font-bold text-[10px]">Stage 6</Badge>
             <Badge variant="green" className="font-bold text-[10px]">Audit Ready</Badge>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">

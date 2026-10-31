@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, ensureDatabaseReady } from "@/lib/prisma";
+import { seedDemoData } from "@/lib/seed-data";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,9 +13,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    let existingUser = null;
+    try {
+      existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+    } catch (queryErr: any) {
+      console.warn("Database error during register check, bootstrapping database:", queryErr.message);
+      ensureDatabaseReady(true);
+      try {
+        existingUser = await prisma.user.findUnique({ where: { email } });
+      } catch (recoveryErr) {
+        console.error("Database recovery error:", recoveryErr);
+      }
+    }
 
     if (existingUser) {
       return NextResponse.json(

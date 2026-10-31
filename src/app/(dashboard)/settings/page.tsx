@@ -104,9 +104,6 @@ export default function SettingsBusinessPage() {
                 <Building2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                 Settings & Preferences
               </h1>
-              <Badge variant="purple" className="font-bold text-[10px]">
-                Stage 1
-              </Badge>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xl leading-relaxed">
               Configure user interface themes, statutory tax identifiers, accounting conventions, and safety liquidity reserves.

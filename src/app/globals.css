@@ -139,11 +139,36 @@ html.dark body {
   box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.35);
 }
 
-/* Smooth transitions */
-* {
-  transition-property: background-color, border-color, color, fill, stroke, box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+/* Hardware-accelerated smooth mobile interactions */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Scoped, performant GPU-friendly transitions (prevents universal selector lag) */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+.interactive,
+.glass-widget,
+.glass-panel {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, transform, opacity;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 200ms;
+}
+
+/* Modal and drawer smooth hardware acceleration */
+.mobile-gpu-accelerate {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 /* Print Styles */

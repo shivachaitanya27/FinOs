@@ -22,53 +22,22 @@ import { cn } from "@/lib/utils";
 import { FinOSLogo } from "@/components/ui/logo";
 
 export const navigationItems = [
-  { name: "Overview", href: "/", icon: LayoutDashboard, stage: "Stage 1" },
-  { name: "Transactions", href: "/transactions", icon: Receipt, stage: "Stage 2" },
-  { name: "Data Management", href: "/data-management", icon: Database, stage: "Stage 2" },
-  { name: "Reconciliation", href: "/reconciliation", icon: Scale, stage: "Stage 3" },
-  { name: "Revenue Analysis", href: "/revenue-analysis", icon: TrendingUp, stage: "Stage 2" },
-  { name: "Expense Analysis", href: "/expense-analysis", icon: TrendingDown, stage: "Stage 2" },
-  { name: "Cash Flow", href: "/cash-flow", icon: Banknote, stage: "Stage 4" },
-  { name: "Financial Risks", href: "/financial-risks", icon: AlertTriangle, stage: "Stage 4" },
-  { name: "AI Recommendations", href: "/ai-recommendations", icon: Sparkles, stage: "Stage 5" },
-  { name: "Profit & Loss", href: "/profit-loss", icon: FileSpreadsheet, stage: "Stage 6" },
-  { name: "Reports", href: "/reports", icon: FileText, stage: "Stage 6" },
-  { name: "Settings", href: "/settings", icon: Settings, stage: "Stage 1" },
+  { name: "Overview", href: "/", icon: LayoutDashboard },
+  { name: "Transactions", href: "/transactions", icon: Receipt },
+  { name: "Data Management", href: "/data-management", icon: Database },
+  { name: "Reconciliation", href: "/reconciliation", icon: Scale },
+  { name: "Revenue Analysis", href: "/revenue-analysis", icon: TrendingUp },
+  { name: "Expense Analysis", href: "/expense-analysis", icon: TrendingDown },
+  { name: "Cash Flow", href: "/cash-flow", icon: Banknote },
+  { name: "Financial Risks", href: "/financial-risks", icon: AlertTriangle },
+  { name: "AI Recommendations", href: "/ai-recommendations", icon: Sparkles },
+  { name: "Profit & Loss", href: "/profit-loss", icon: FileSpreadsheet },
+  { name: "Reports", href: "/reports", icon: FileText },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
-
-  const getStageBadgeStyle = (stage: string, isActive: boolean) => {
-    switch (stage) {
-      case "Stage 1":
-        return isActive
-          ? "bg-purple-600 text-white font-bold"
-          : "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40";
-      case "Stage 2":
-        return isActive
-          ? "bg-purple-600 text-white font-bold"
-          : "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40";
-      case "Stage 3":
-        return isActive
-          ? "bg-emerald-600 text-white font-bold"
-          : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40";
-      case "Stage 4":
-        return isActive
-          ? "bg-amber-600 text-white font-bold"
-          : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40";
-      case "Stage 5":
-        return isActive
-          ? "bg-purple-600 text-white font-bold"
-          : "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700/40";
-      case "Stage 6":
-        return isActive
-          ? "bg-emerald-600 text-white font-bold"
-          : "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/40";
-      default:
-        return "bg-slate-100 dark:bg-obsidian-800 text-slate-600 dark:text-slate-400";
-    }
-  };
 
   return (
     <aside className="hidden lg:flex flex-col w-72 h-screen sticky top-0 bg-white/90 dark:bg-obsidian-900/90 border-r border-slate-200/90 dark:border-white/10 backdrop-blur-2xl z-30 select-none shadow-xs">
@@ -106,7 +75,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group relative flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200",
+                "group relative flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-150",
                 isActive
                   ? "bg-purple-50 dark:bg-purple-950/50 text-purple-800 dark:text-purple-200 font-bold border-l-2 border-purple-600 shadow-xs"
                   : "text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50/60 dark:hover:bg-purple-950/30"
@@ -123,14 +92,9 @@ export function Sidebar() {
                 />
                 <span className="truncate">{item.name}</span>
               </div>
-              <span
-                className={cn(
-                  "text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 tracking-wide transition-colors",
-                  getStageBadgeStyle(item.stage, isActive)
-                )}
-              >
-                {item.stage}
-              </span>
+              {isActive && (
+                <div className="h-1.5 w-1.5 rounded-full bg-purple-600 dark:bg-purple-400 shrink-0" />
+              )}
             </Link>
           );
         })}
@@ -146,7 +110,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group relative flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200",
+                "group relative flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-150",
                 isActive
                   ? "bg-purple-50 dark:bg-purple-950/50 text-purple-800 dark:text-purple-200 font-bold border-l-2 border-purple-600 shadow-xs"
                   : "text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50/60 dark:hover:bg-purple-950/30"
@@ -163,14 +127,9 @@ export function Sidebar() {
                 />
                 <span className="truncate">{item.name}</span>
               </div>
-              <span
-                className={cn(
-                  "text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 tracking-wide transition-colors",
-                  getStageBadgeStyle(item.stage, isActive)
-                )}
-              >
-                {item.stage}
-              </span>
+              {isActive && (
+                <div className="h-1.5 w-1.5 rounded-full bg-purple-600 dark:bg-purple-400 shrink-0" />
+              )}
             </Link>
           );
         })}
@@ -186,7 +145,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group relative flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200",
+                "group relative flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-150",
                 isActive
                   ? "bg-purple-50 dark:bg-purple-950/50 text-purple-800 dark:text-purple-200 font-bold border-l-2 border-purple-600 shadow-xs"
                   : "text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50/60 dark:hover:bg-purple-950/30"
@@ -203,14 +162,9 @@ export function Sidebar() {
                 />
                 <span className="truncate">{item.name}</span>
               </div>
-              <span
-                className={cn(
-                  "text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 tracking-wide transition-colors",
-                  getStageBadgeStyle(item.stage, isActive)
-                )}
-              >
-                {item.stage}
-              </span>
+              {isActive && (
+                <div className="h-1.5 w-1.5 rounded-full bg-purple-600 dark:bg-purple-400 shrink-0" />
+              )}
             </Link>
           );
         })}
