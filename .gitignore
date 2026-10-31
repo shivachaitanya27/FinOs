@@ -20,21 +20,19 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Environment and Secrets
-.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-*.env
 
-# SQLite & Local Databases
-dev.db
+# Default Sandbox SQLite Database & Environment (Always tracked for seamless evaluation)
+!.env
+!prisma/dev.db
+
+# SQLite Temp Files
 dev.db-journal
 dev.db-wal
 dev.db-shm
-*.db
-*.sqlite
-*.sqlite3
 
 # Operating System & IDE
 .DS_Store

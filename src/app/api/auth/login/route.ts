@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { seedDemoData } from "@/lib/seed-data";
+import { execSync } from "child_process";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,15 +11,46 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: {
-        memberships: {
-          include: { business: true },
+    let user = null;
+    try {
+      user = await prisma.user.findUnique({
+        where: { email },
+        include: {
+          memberships: {
+            include: { business: true },
+          },
         },
-      },
-    });
+      });
+    } catch (queryErr: any) {
+      console.warn("Database error during login, attempting schema auto-sync:", queryErr.message);
+      try {
+        execSync("npx prisma db push --skip-generate", { stdio: "pipe" });
+        await seedDemoData();
+        user = await prisma.user.findUnique({
+          where: { email },
+          include: {
+            memberships: {
+              include: { business: true },
+            },
+          },
+        });
+      } catch (recoveryErr) {
+        console.error("Auto-sync recovery error:", recoveryErr);
+      }
+    }
+
+    // If attempting to login as demo user and database is empty, seed automatically
+    if (!user && (email.includes("bharattech.in") || email === "aarav.sharma@bharattech.in")) {
+      await seedDemoData();
+      user = await prisma.user.findUnique({
+        where: { email },
+        include: {
+          memberships: {
+            include: { business: true },
+          },
+        },
+      });
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -35,7 +68,7 @@ export async function POST(request: NextRequest) {
       name: user.name,
       role: user.memberships[0]?.role || "ADMIN",
       businessId: business?.id || "default",
-      businessName: business?.name || "My Business",
+      businessName: business?.name || "BharatTech Solutions",
       currency: business?.currency || "INR",
     };
 

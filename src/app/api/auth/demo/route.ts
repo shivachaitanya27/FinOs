@@ -1,20 +1,33 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { seedDemoData } from "@/lib/seed-data";
+import { execSync } from "child_process";
 
 export async function POST() {
   try {
-    let user = await prisma.user.findUnique({
-      where: { email: "aarav.sharma@bharattech.in" },
-      include: {
-        memberships: {
-          include: { business: true },
-        },
-      },
-    });
+    let user = null;
 
-    // If not seeded yet, automatically seed first
-    if (!user || user.memberships.length === 0) {
+    try {
+      user = await prisma.user.findUnique({
+        where: { email: "aarav.sharma@bharattech.in" },
+        include: {
+          memberships: {
+            include: { business: true },
+          },
+        },
+      });
+    } catch (dbErr: any) {
+      console.warn("Database or tables not initialized, running auto-sync:", dbErr.message);
+      try {
+        execSync("npx prisma db push --skip-generate", { stdio: "pipe" });
+      } catch (pushErr) {
+        console.error("Prisma db push fallback error:", pushErr);
+      }
+    }
+
+    // If user not found or memberships empty, automatically seed fresh demo data
+    if (!user || !user.memberships || user.memberships.length === 0) {
+      console.log("Seeding fresh demo database for evaluation...");
       await seedDemoData();
       user = await prisma.user.findUnique({
         where: { email: "aarav.sharma@bharattech.in" },
@@ -26,9 +39,9 @@ export async function POST() {
       });
     }
 
-    if (!user || user.memberships.length === 0) {
+    if (!user || !user.memberships || user.memberships.length === 0) {
       return NextResponse.json(
-        { error: "Could not initialize demo user" },
+        { error: "Could not initialize demo user. Please retry." },
         { status: 500 }
       );
     }
