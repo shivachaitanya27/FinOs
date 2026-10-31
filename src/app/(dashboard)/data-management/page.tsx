@@ -27,6 +27,7 @@ import {
   ExternalLink,
   ShieldAlert,
   Info,
+  Sparkles,
 } from "lucide-react";
 
 type SourceType = "BANK_STATEMENT" | "TALLY" | "ZOHO_BOOKS" | "GENERIC";
@@ -133,6 +134,33 @@ export default function DataManagementPage() {
     notes: "",
   });
   const [manualSuccessMsg, setManualSuccessMsg] = useState<string | null>(null);
+  const [isDirectSeeding, setIsDirectSeeding] = useState<boolean>(false);
+  const [seedNotification, setSeedNotification] = useState<string | null>(null);
+
+  const handleDirectLoadSampleData = async () => {
+    try {
+      setIsDirectSeeding(true);
+      setSeedNotification(null);
+      const res = await fetch("/api/demo-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSeedNotification("✔ Loaded 35+ realistic Indian enterprise transactions into your ledger.");
+        await fetchBusinessAccounts();
+        await fetchImportHistory();
+        setTimeout(() => setSeedNotification(null), 5000);
+      } else {
+        setSeedNotification(`Error: ${data.error || "Failed to load sample dataset"}`);
+      }
+    } catch (err: any) {
+      setSeedNotification(`Network error: ${err.message}`);
+    } finally {
+      setIsDirectSeeding(false);
+    }
+  };
 
   // Fetch accounts & history on mount
   useEffect(() => {
@@ -466,9 +494,34 @@ export default function DataManagementPage() {
                 FinOS Standard CSV
               </Button>
             </a>
+
+            <Button
+              type="button"
+              variant="purple"
+              size="sm"
+              onClick={handleDirectLoadSampleData}
+              disabled={isDirectSeeding}
+              className="text-xs font-semibold shadow-xs"
+            >
+              <Sparkles className={`h-3.5 w-3.5 mr-1.5 ${isDirectSeeding ? "animate-spin" : ""}`} />
+              {isDirectSeeding ? "Populating..." : "1-Click Load Sample Dataset"}
+            </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* Sample Data Success Banner */}
+      {seedNotification && (
+        <div className="p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/90 dark:bg-emerald-950/40 dark:border-emerald-800 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-200">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="font-semibold">{seedNotification}</span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => setSeedNotification(null)}>
+            Dismiss
+          </Button>
+        </div>
+      )}
 
       {/* Global Error Banner */}
       {uploadError && (

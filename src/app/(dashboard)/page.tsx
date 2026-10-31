@@ -137,13 +137,13 @@ export default function DashboardOverviewPage() {
           Initialize FinOS Ledger
         </h3>
         <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-          No financial records were found in the database. Populate the
-          environment with realistic Indian enterprise demo data (GST, HDFC bank accounts,
+          No financial records were found in the database. Populate your
+          workspace with realistic Indian enterprise sample data (GST, HDFC/ICICI bank accounts,
           invoices, and risk alerts).
         </p>
-        <Button variant="teal" size="lg" onClick={handleReloadDemo}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Load Enterprise Demo Data
+        <Button variant="purple" size="lg" onClick={handleReloadDemo} className="font-semibold shadow-md shadow-purple-600/30">
+          <Sparkles className="h-4 w-4 mr-2" />
+          Load Sample Enterprise Data
         </Button>
       </div>
     );

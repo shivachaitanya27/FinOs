@@ -13,9 +13,27 @@ export async function GET(request: NextRequest) {
     const businessIdParam = searchParams.get("businessId");
 
     // 1. Identify active business
-    let business = businessIdParam
-      ? await prisma.business.findUnique({ where: { id: businessIdParam } })
-      : await prisma.business.findFirst();
+    let business = null;
+    if (businessIdParam) {
+      business = await prisma.business.findUnique({ where: { id: businessIdParam } });
+    }
+    if (!business) {
+      const sessionCookie = request.cookies.get("finos_session")?.value;
+      if (sessionCookie) {
+        try {
+          const session = JSON.parse(sessionCookie);
+          if (session?.businessId) {
+            business = await prisma.business.findUnique({ where: { id: session.businessId } });
+          }
+        } catch (_) {}
+      }
+    }
+    if (!business) {
+      business = (await prisma.business.findFirst({
+        where: { transactions: { some: {} } },
+        orderBy: { createdAt: "desc" },
+      })) || (await prisma.business.findFirst({ orderBy: { createdAt: "desc" } }));
+    }
 
     if (!business) {
       return NextResponse.json({

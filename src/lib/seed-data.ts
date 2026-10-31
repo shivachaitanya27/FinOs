@@ -1,112 +1,165 @@
 import { prisma } from "./prisma";
 
-export async function seedDemoData() {
-  // 1. Clean existing demo data safely
-  const existingBusiness = await prisma.business.findFirst({
-    where: { taxId: "29AABCU9603R1ZM" },
-  });
+export async function seedDemoData(targetBusinessId?: string, targetUserId?: string) {
+  let business: any;
+  let demoUser: any;
 
-  if (existingBusiness) {
-    // Delete in proper cascade order
-    await prisma.chatMessage.deleteMany({ where: { conversation: { businessId: existingBusiness.id } } });
-    await prisma.chatConversation.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.reconciliationRecord.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.riskAlert.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.aIRecommendation.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.forecast.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.auditLog.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.transaction.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.importedFile.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.financialAccount.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.businessMembership.deleteMany({ where: { businessId: existingBusiness.id } });
-    await prisma.business.delete({ where: { id: existingBusiness.id } });
+  if (targetBusinessId) {
+    business = await prisma.business.findUnique({
+      where: { id: targetBusinessId },
+      include: { accounts: true },
+    });
+    if (!business) {
+      throw new Error(`Business with ID ${targetBusinessId} not found`);
+    }
+    if (targetUserId) {
+      demoUser = await prisma.user.findUnique({ where: { id: targetUserId } });
+    }
+  } else {
+    // 1. Clean existing demo data safely
+    const existingBusiness = await prisma.business.findFirst({
+      where: { taxId: "29AABCU9603R1ZM" },
+    });
+
+    if (existingBusiness) {
+      // Delete in proper cascade order
+      await prisma.chatMessage.deleteMany({ where: { conversation: { businessId: existingBusiness.id } } });
+      await prisma.chatConversation.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.reconciliationRecord.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.riskAlert.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.aIRecommendation.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.forecast.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.auditLog.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.transaction.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.importedFile.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.financialAccount.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.businessMembership.deleteMany({ where: { businessId: existingBusiness.id } });
+      await prisma.business.delete({ where: { id: existingBusiness.id } });
+    }
+
+    // Clean up orphaned duplicate test businesses from prior test runs
+    const emptyTestBusinesses = await prisma.business.findMany({
+      where: {
+        accounts: { none: {} },
+        memberships: { none: {} },
+      },
+    });
+    for (const emptyBiz of emptyTestBusinesses) {
+      try {
+        await prisma.transaction.deleteMany({ where: { businessId: emptyBiz.id } });
+        await prisma.business.delete({ where: { id: emptyBiz.id } });
+      } catch (_) {}
+    }
+
+    // 2. Create Demo User
+    demoUser = await prisma.user.findUnique({
+      where: { email: "aarav.sharma@bharattech.in" },
+    });
+
+    if (!demoUser) {
+      demoUser = await prisma.user.create({
+        data: {
+          email: "aarav.sharma@bharattech.in",
+          name: "Aarav Sharma",
+          role: "FOUNDER_CEO",
+          passwordHash: "demo123", // Demo hash
+        },
+      });
+    }
+
+    // 3. Create Business
+    business = await prisma.business.create({
+      data: {
+        name: "BharatTech Retail & Cloud Solutions Pvt Ltd",
+        legalName: "BharatTech Enterprise Solutions India Private Limited",
+        taxId: "29AABCU9603R1ZM",
+        panNumber: "AABCU9603R",
+        currency: "INR",
+        industry: "B2B SaaS & Tech Logistics",
+        fiscalYearStart: "APRIL",
+        minimumCashBalance: 50000.0,
+        memberships: {
+          create: {
+            userId: demoUser?.id || null,
+            role: "OWNER",
+          },
+        },
+      },
+      include: { accounts: true },
+    });
   }
 
-  // 2. Create Demo User
-  let demoUser = await prisma.user.findUnique({
-    where: { email: "aarav.sharma@bharattech.in" },
-  });
+  // 4. Ensure Financial Accounts exist for target business
+  let hdfc = business.accounts?.find((a: any) => a.name.includes("HDFC") || a.isDefault);
+  let icici = business.accounts?.find((a: any) => a.name.includes("ICICI"));
+  let razorpay = business.accounts?.find((a: any) => a.name.includes("Razorpay") || a.accountType === "PAYMENT_GATEWAY");
+  let pettyCash = business.accounts?.find((a: any) => a.name.includes("Petty") || a.accountType === "CASH");
 
-  if (!demoUser) {
-    demoUser = await prisma.user.create({
+  if (!hdfc) {
+    hdfc = await prisma.financialAccount.create({
       data: {
-        email: "aarav.sharma@bharattech.in",
-        name: "Aarav Sharma",
-        role: "FOUNDER_CEO",
-        passwordHash: "demo123", // Demo hash
+        businessId: business.id,
+        name: "HDFC Bank Corporate Current A/c",
+        accountType: "BANK",
+        accountNumber: "50200084912903",
+        bankName: "HDFC Bank Ltd",
+        ifscCode: "HDFC0001043",
+        currentBalance: 2485000,
+        isDefault: true,
       },
     });
   }
 
-  // 3. Create Business
-  const business = await prisma.business.create({
-    data: {
-      name: "BharatTech Retail & Cloud Solutions Pvt Ltd",
-      legalName: "BharatTech Enterprise Solutions India Private Limited",
-      taxId: "29AABCU9603R1ZM",
-      panNumber: "AABCU9603R",
-      currency: "INR",
-      industry: "B2B SaaS & Tech Logistics",
-      fiscalYearStart: "APRIL",
-      minimumCashBalance: 50000.0,
-      memberships: {
-        create: {
-          userId: demoUser.id,
-          role: "OWNER",
-        },
+  if (!icici) {
+    icici = await prisma.financialAccount.create({
+      data: {
+        businessId: business.id,
+        name: "ICICI Bank Operating Account",
+        accountType: "BANK",
+        accountNumber: "002305018942",
+        bankName: "ICICI Bank Ltd",
+        ifscCode: "ICIC0000023",
+        currentBalance: 780000,
+        isDefault: false,
       },
-    },
-  });
+    });
+  }
 
-  // 4. Create Financial Accounts
-  const hdfc = await prisma.financialAccount.create({
-    data: {
-      businessId: business.id,
-      name: "HDFC Bank Corporate Current A/c",
-      accountType: "BANK",
-      accountNumber: "50200084912903",
-      bankName: "HDFC Bank Ltd",
-      ifscCode: "HDFC0001043",
-      currentBalance: 2485000,
-      isDefault: true,
-    },
-  });
+  if (!razorpay) {
+    razorpay = await prisma.financialAccount.create({
+      data: {
+        businessId: business.id,
+        name: "Razorpay Settlement Gateway",
+        accountType: "PAYMENT_GATEWAY",
+        accountNumber: "rzp_live_92A109",
+        bankName: "Razorpay Software Pvt Ltd",
+        currentBalance: 345000,
+        isDefault: false,
+      },
+    });
+  }
 
-  const icici = await prisma.financialAccount.create({
-    data: {
-      businessId: business.id,
-      name: "ICICI Bank Operating Account",
-      accountType: "BANK",
-      accountNumber: "002305018942",
-      bankName: "ICICI Bank Ltd",
-      ifscCode: "ICIC0000023",
-      currentBalance: 780000,
-      isDefault: false,
-    },
-  });
+  if (!pettyCash) {
+    pettyCash = await prisma.financialAccount.create({
+      data: {
+        businessId: business.id,
+        name: "Petty Cash & Expense Desk",
+        accountType: "CASH",
+        accountNumber: "PETTY-01",
+        currentBalance: 45000,
+        isDefault: false,
+      },
+    });
+  }
 
-  const razorpay = await prisma.financialAccount.create({
-    data: {
-      businessId: business.id,
-      name: "Razorpay Settlement Gateway",
-      accountType: "PAYMENT_GATEWAY",
-      accountNumber: "rzp_live_92A109",
-      bankName: "Razorpay Software Pvt Ltd",
-      currentBalance: 345000,
-      isDefault: false,
-    },
-  });
-
-  const pettyCash = await prisma.financialAccount.create({
-    data: {
-      businessId: business.id,
-      name: "Petty Cash & Expense Desk",
-      accountType: "CASH",
-      accountNumber: "PETTY-01",
-      currentBalance: 45000,
-      isDefault: false,
-    },
-  });
+  // If seeding specific target business, wipe prior demo records to avoid duplicates
+  if (targetBusinessId) {
+    await prisma.reconciliationRecord.deleteMany({ where: { businessId: business.id } });
+    await prisma.riskAlert.deleteMany({ where: { businessId: business.id } });
+    await prisma.aIRecommendation.deleteMany({ where: { businessId: business.id } });
+    await prisma.forecast.deleteMany({ where: { businessId: business.id } });
+    await prisma.transaction.deleteMany({ where: { businessId: business.id } });
+  }
 
   // 5. Create Realistic Transactions spanning today, past 7 days, this month, last month, and 3 months ago
   const now = new Date();
@@ -716,16 +769,18 @@ export async function seedDemoData() {
   });
 
   // 9. Create Audit Log
-  await prisma.auditLog.create({
-    data: {
-      businessId: business.id,
-      userId: demoUser.id,
-      action: "DEMO_DATA_LOAD",
-      entityType: "BUSINESS",
-      entityId: business.id,
-      details: "Populated complete Stage 1 Indian SaaS financial dataset with 32 transactions, risk alerts, and accounts.",
-    },
-  });
+  if (demoUser?.id) {
+    await prisma.auditLog.create({
+      data: {
+        businessId: business.id,
+        userId: demoUser?.id || null,
+        action: "DEMO_DATA_LOAD",
+        entityType: "BUSINESS",
+        entityId: business.id,
+        details: "Populated complete verified Indian enterprise financial dataset with transactions, risk alerts, and accounts.",
+      },
+    });
+  }
 
   // 10. Create Forecast records for next 3 months
   const nextMonth1 = new Date(now.getFullYear(), now.getMonth() + 1, 1);
@@ -768,7 +823,7 @@ export async function seedDemoData() {
     success: true,
     businessId: business.id,
     businessName: business.name,
-    userId: demoUser.id,
+    userId: demoUser?.id || null,
     transactionCount: rawTransactions.length,
     accountsCount: 4,
   };

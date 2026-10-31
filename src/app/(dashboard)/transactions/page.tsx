@@ -32,6 +32,7 @@ import {
   Hash,
   Tag,
   Clock,
+  Sparkles,
 } from "lucide-react";
 
 export default function TransactionsPage() {
@@ -57,6 +58,23 @@ export default function TransactionsPage() {
 
   // Selected Transaction for Read-Only Details Modal
   const [selectedTx, setSelectedTx] = useState<any | null>(null);
+  const [isDirectSeeding, setIsDirectSeeding] = useState<boolean>(false);
+
+  const handleLoadSampleData = async () => {
+    try {
+      setIsDirectSeeding(true);
+      await fetch("/api/demo-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      await fetchTransactions();
+    } catch (err) {
+      console.error("Failed to seed sample data:", err);
+    } finally {
+      setIsDirectSeeding(false);
+    }
+  };
 
   const categories = [
     "ALL",
@@ -350,11 +368,21 @@ export default function TransactionsPage() {
           </div>
         ) : transactions.length === 0 ? (
           <div className="p-12 text-center text-slate-400">
-            <Receipt className="h-8 w-8 mx-auto mb-2 text-slate-300" />
-            <p className="text-sm font-semibold text-slate-700">No transactions found</p>
-            <p className="text-xs text-slate-400 mt-1">
-              Adjust your search filters or import statement records.
+            <Receipt className="h-8 w-8 mx-auto mb-2 text-slate-300 dark:text-slate-600" />
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No transactions found</p>
+            <p className="text-xs text-slate-400 mt-1 mb-4">
+              Adjust your search filters or populate your workspace with sample enterprise transactions.
             </p>
+            <Button
+              variant="purple"
+              size="sm"
+              onClick={handleLoadSampleData}
+              disabled={isDirectSeeding}
+              className="font-semibold shadow-xs"
+            >
+              <Sparkles className={`h-4 w-4 mr-1.5 ${isDirectSeeding ? "animate-spin" : ""}`} />
+              {isDirectSeeding ? "Adding Data..." : "Load Sample Enterprise Transactions"}
+            </Button>
           </div>
         ) : (
           <div className="overflow-x-auto">

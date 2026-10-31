@@ -73,6 +73,13 @@ export async function POST(request: NextRequest) {
       return { user, business };
     });
 
+    // Automatically initialize business with realistic enterprise sample records
+    try {
+      await seedDemoData(result.business.id, result.user.id);
+    } catch (seedErr) {
+      console.warn("Auto-seeding new registered business failed:", seedErr);
+    }
+
     const sessionPayload = {
       userId: result.user.id,
       email: result.user.email,

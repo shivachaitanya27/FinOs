@@ -13,6 +13,7 @@ import {
   CreditCard,
   Tag,
   FileText,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -29,6 +30,8 @@ export function QuickActions({
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
+  const [seedSuccess, setSeedSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     description: "",
@@ -108,6 +111,31 @@ export function QuickActions({
     }, 1500);
   };
 
+  const handleSeedSampleData = async () => {
+    try {
+      setIsSeeding(true);
+      setErrorMsg(null);
+      const res = await fetch("/api/demo-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (res.ok) {
+        setSeedSuccess(true);
+        setTimeout(() => setSeedSuccess(false), 3000);
+        if (onTransactionAdded) onTransactionAdded();
+        if (onRefreshData) onRefreshData();
+      } else {
+        const data = await res.json();
+        setErrorMsg(data.error || "Failed to load sample dataset.");
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to seed sample data.");
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   return (
     <>
       <div className="flex items-center gap-2.5 flex-wrap">
@@ -149,6 +177,31 @@ export function QuickActions({
             }`}
           />
           {isExporting ? "Downloading CSV..." : "Export Ledger"}
+        </Button>
+
+        {/* 1-Click Load Sample Data Button */}
+        <Button
+          type="button"
+          variant="glass"
+          size="sm"
+          onClick={handleSeedSampleData}
+          disabled={isSeeding}
+          className={`font-semibold border transition-all ${
+            seedSuccess
+              ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-700/50"
+              : "text-purple-700 dark:text-purple-300 border-purple-200/80 dark:border-purple-800/50 hover:bg-purple-50/70 dark:hover:bg-purple-950/40"
+          }`}
+        >
+          <Sparkles
+            className={`h-4 w-4 mr-1.5 ${
+              isSeeding
+                ? "animate-spin text-purple-600"
+                : seedSuccess
+                ? "text-emerald-600"
+                : "text-purple-600 dark:text-purple-400"
+            }`}
+          />
+          {isSeeding ? "Adding Data..." : seedSuccess ? "Sample Data Added!" : "Add Sample Data"}
         </Button>
       </div>
 

@@ -20,9 +20,27 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "15", 10);
     const exportCsv = searchParams.get("export") === "csv";
 
-    let business = businessIdParam
-      ? await prisma.business.findUnique({ where: { id: businessIdParam } })
-      : await prisma.business.findFirst();
+    let business = null;
+    if (businessIdParam) {
+      business = await prisma.business.findUnique({ where: { id: businessIdParam } });
+    }
+    if (!business) {
+      const sessionCookie = request.cookies.get("finos_session")?.value;
+      if (sessionCookie) {
+        try {
+          const session = JSON.parse(sessionCookie);
+          if (session?.businessId) {
+            business = await prisma.business.findUnique({ where: { id: session.businessId } });
+          }
+        } catch (_) {}
+      }
+    }
+    if (!business) {
+      business = (await prisma.business.findFirst({
+        where: { transactions: { some: {} } },
+        orderBy: { createdAt: "desc" },
+      })) || (await prisma.business.findFirst({ orderBy: { createdAt: "desc" } }));
+    }
 
     if (!business) {
       return NextResponse.json({ transactions: [], total: 0, totalPages: 0, page: 1 });
