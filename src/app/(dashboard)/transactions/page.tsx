@@ -170,25 +170,28 @@ export default function TransactionsPage() {
   return (
     <div className="space-y-6 pb-16">
       {/* Top Banner: Glassmorphic Light */}
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 bg-white/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-xl font-black text-slate-900 flex items-center gap-2.5 tracking-tight">
-              <Receipt className="h-5 w-5 text-sky-600" />
+            <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2.5 tracking-tight">
+              <Receipt className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Financial Transactions Ledger
             </h1>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
-              <Lock className="h-3 w-3 text-sky-600" />
+            <Badge variant="purple" className="font-bold text-[10px]">
+              Stage 2
+            </Badge>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
+              <Lock className="h-3 w-3 text-purple-600 dark:text-purple-400" />
               Immutable Ledger • Read-Only
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Complete synchronized records from Indian bank feeds, payment gateways, and accounting journals. In compliance with statutory audit standards, all recorded entries are cryptographically sealed.
           </p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
           <Button variant="glass" size="sm" onClick={handleExportCSV}>
-            <Download className="h-4 w-4 mr-1.5 text-sky-600" />
+            <Download className="h-4 w-4 mr-1.5 text-purple-600 dark:text-purple-400" />
             Export CSV
           </Button>
           <QuickActions onTransactionAdded={fetchTransactions} />

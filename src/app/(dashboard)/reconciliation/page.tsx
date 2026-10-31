@@ -206,39 +206,39 @@ export default function ReconciliationPage() {
   return (
     <div className="space-y-6 pb-16">
       {/* Top Banner */}
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 bg-white/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-black text-slate-900 flex items-center gap-2.5 tracking-tight">
-              <Scale className="h-5 w-5 text-sky-600" />
+            <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2.5 tracking-tight">
+              <Scale className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Automated Bank Reconciliation & Audit Engine
             </h1>
-            <Badge variant="sky" className="text-[10px] font-bold">
-              STAGE 3 ENGINE
+            <Badge variant="purple" className="text-[10px] font-bold">
+              Stage 3
             </Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             2-way algorithmic matching between bank statement feeds and accounting ledgers (Tally, Zoho Books) with duplicate protection and confidence scoring.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
           <Button
-            variant="glass-sky"
+            variant="glass-purple"
             size="sm"
             onClick={() => handleRunAutoReconciliation(false)}
             disabled={isRunningAuto}
-            className="border-sky-400/30"
+            className="border-purple-400/30 font-semibold"
           >
-            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isRunningAuto ? "animate-spin text-sky-400" : "text-sky-400"}`} />
+            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isRunningAuto ? "animate-spin text-purple-600 dark:text-purple-400" : "text-purple-600 dark:text-purple-400"}`} />
             Run Matching Engine
           </Button>
 
           <Button
-            variant="sky"
+            variant="purple"
             size="sm"
             onClick={() => setIsManualModalOpen(true)}
-            className="shadow-md shadow-sky-500/20"
+            className="shadow-md shadow-purple-500/20 font-semibold"
           >
             <LinkIcon className="h-3.5 w-3.5 mr-1.5" />
             Manual Match Pair

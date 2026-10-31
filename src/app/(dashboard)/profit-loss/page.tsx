@@ -81,25 +81,26 @@ export default function ProfitLossPage() {
       </div>
 
       {/* Screen Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500 print:hidden">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Statement of Profit & Loss</h1>
-            <Badge variant="sky">Schedule III (Ind AS)</Badge>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Statement of Profit & Loss</h1>
+            <Badge variant="purple" className="font-bold text-[10px]">Stage 6</Badge>
+            <Badge variant="green" className="font-bold text-[10px]">Schedule III (Ind AS)</Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Standardized Indian corporate accounting P&L compliant with Companies Act 2013 and Ministry of Corporate Affairs (MCA).
           </p>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2.5 flex-wrap">
-          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-xs">
-            <Calendar className="h-3.5 w-3.5 text-sky-600" />
+          <div className="flex items-center gap-2 bg-white dark:bg-obsidian-800 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-1.5 shadow-xs">
+            <Calendar className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
             <select
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="bg-transparent text-xs text-slate-800 focus:outline-none cursor-pointer font-medium"
+              className="bg-transparent text-xs text-slate-800 dark:text-white focus:outline-none cursor-pointer font-medium"
             >
               <option value="this_month">This Month</option>
               <option value="last_month">Last Month</option>
@@ -109,11 +110,11 @@ export default function ProfitLossPage() {
           </div>
 
           <Button
-            variant="sky"
+            variant="purple"
             size="sm"
             onClick={handleDownloadExcel}
             disabled={loading}
-            className="text-xs shadow-md shadow-sky-500/20"
+            className="text-xs shadow-md shadow-purple-500/20 font-semibold"
           >
             <Download className="h-3.5 w-3.5 mr-1.5" />
             Export Excel (.xlsx)

@@ -201,18 +201,18 @@ export default function FinancialRisksDashboard() {
   return (
     <div className="space-y-6 pb-16">
       {/* Top Banner / Header */}
-      <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl border border-slate-200/90 bg-white/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600">
+      <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-700">
+            <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800/40 text-purple-700 dark:text-purple-300">
               <ShieldAlert className="h-6 w-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Financial Risk Intelligence & Anomaly Guard</h1>
-                <Badge variant="sky">Stage 4 Active</Badge>
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Financial Risk Intelligence & Anomaly Guard</h1>
+                <Badge variant="purple" className="font-bold text-[10px]">Stage 4</Badge>
               </div>
-              <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
                 Deterministic detection of liquidity deficits, expense surges, duplicate disbursements, and overdue receivables.
               </p>
             </div>
@@ -221,16 +221,16 @@ export default function FinancialRisksDashboard() {
 
         <div className="flex items-center gap-3">
           <Button
-            variant="glass-sky"
+            variant="glass-purple"
             size="sm"
             onClick={() => {
               setRefreshing(true);
               fetchRisks();
             }}
             disabled={loading || refreshing}
-            className="text-xs"
+            className="text-xs font-semibold"
           >
-            <RefreshCw className={`h-3.5 w-3.5 mr-2 text-sky-400 ${refreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 mr-2 text-purple-600 dark:text-purple-400 ${refreshing ? "animate-spin" : ""}`} />
             Refresh Intelligence
           </Button>
         </div>

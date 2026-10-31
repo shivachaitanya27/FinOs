@@ -174,13 +174,14 @@ export default function ReportsPage() {
       </div>
 
       {/* Screen Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500 print:hidden">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Financial Reports & Audit Packs</h1>
-            <Badge variant="sky">Stage 6 Ready</Badge>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Financial Reports & Audit Packs</h1>
+            <Badge variant="purple" className="font-bold text-[10px]">Stage 6</Badge>
+            <Badge variant="green" className="font-bold text-[10px]">Audit Ready</Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Deterministic, verified statutory audit reports and corporate statements with instant multi-sheet Excel & PDF export.
           </p>
         </div>
@@ -188,11 +189,11 @@ export default function ReportsPage() {
         {/* Global Actions */}
         <div className="flex items-center gap-2.5 flex-wrap">
           <Button
-            variant="sky"
+            variant="purple"
             size="sm"
             onClick={handleDownloadExcel}
             disabled={loading}
-            className="shadow-md shadow-sky-500/20"
+            className="shadow-md shadow-purple-500/20 font-semibold"
           >
             <Download className="h-4 w-4 mr-1.5" />
             Download Excel (.xlsx)
@@ -203,8 +204,9 @@ export default function ReportsPage() {
             size="sm"
             onClick={handlePrintPDF}
             disabled={loading}
+            className="font-semibold"
           >
-            <Printer className="h-4 w-4 mr-1.5 text-sky-400" />
+            <Printer className="h-4 w-4 mr-1.5 text-purple-600 dark:text-purple-400" />
             Print / Export PDF
           </Button>
         </div>

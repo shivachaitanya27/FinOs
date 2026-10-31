@@ -111,25 +111,25 @@ export function QuickActions({
   return (
     <>
       <div className="flex items-center gap-2.5 flex-wrap">
-        {/* SkyBlue High-Impact Primary Button */}
+        {/* Purple High-Impact Primary Button */}
         <Button
           type="button"
-          variant="sky"
+          variant="purple"
           size="sm"
           onClick={() => {
             setErrorMsg(null);
             setIsAddOpen(true);
           }}
-          className="shadow-sm shadow-sky-500/25 font-semibold"
+          className="shadow-sm shadow-purple-500/25 font-semibold"
         >
           <PlusCircle className="h-4 w-4 mr-1.5" />
           Add Transaction
         </Button>
 
-        {/* Glass-Sky Reconcile Button */}
+        {/* Glass-Purple Reconcile Button */}
         <Link href="/reconciliation">
-          <Button variant="glass-sky" size="sm" className="font-semibold">
-            <Scale className="h-4 w-4 mr-1.5 text-sky-600" />
+          <Button variant="glass-purple" size="sm" className="font-semibold">
+            <Scale className="h-4 w-4 mr-1.5 text-purple-600 dark:text-purple-400" />
             Reconcile Statements
           </Button>
         </Link>
@@ -144,7 +144,7 @@ export function QuickActions({
           className="font-semibold"
         >
           <Download
-            className={`h-4 w-4 mr-1.5 text-sky-600 ${
+            className={`h-4 w-4 mr-1.5 text-purple-600 dark:text-purple-400 ${
               isExporting ? "animate-bounce" : ""
             }`}
           />

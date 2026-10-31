@@ -67,17 +67,17 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative z-10 w-full max-w-lg rounded-3xl border border-slate-200/90 bg-white/95 p-6 text-slate-900 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-3xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600",
+          "relative z-10 w-full max-w-lg rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white/95 dark:bg-obsidian-900/95 p-6 text-slate-900 dark:text-white shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-3xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500",
           className
         )}
       >
-        <div className="flex items-start justify-between pb-4 border-b border-slate-100">
+        <div className="flex items-start justify-between pb-4 border-b border-slate-100 dark:border-white/10">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
               {title}
             </h3>
             {description && (
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                 {description}
               </p>
             )}
@@ -85,7 +85,7 @@ export function Modal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors ml-3"
+            className="rounded-xl p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-obsidian-800 transition-colors ml-3"
             aria-label="Close dialog"
           >
             <X className="h-5 w-5" />

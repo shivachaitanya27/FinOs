@@ -236,18 +236,18 @@ export default function CashFlowForecastDashboard() {
   return (
     <div className="space-y-6 pb-16">
       {/* Top Banner / Header */}
-      <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl border border-slate-200/90 bg-white/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600">
+      <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-700">
+            <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800/40 text-purple-700 dark:text-purple-300">
               <Banknote className="h-6 w-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Direct Cash Flow Forecasting Engine</h1>
-                <Badge variant="sky">Stage 4 Active</Badge>
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Direct Cash Flow Forecasting Engine</h1>
+                <Badge variant="purple" className="font-bold text-[10px]">Stage 4</Badge>
               </div>
-              <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
                 Deterministic liquidity modeling: historical run-rates, verified bank reserves, and scheduled receivables/payables.
               </p>
             </div>

@@ -6,9 +6,13 @@ export interface ButtonProps
   variant?:
     | "primary"
     | "secondary"
+    | "purple"
+    | "green"
     | "sky"
     | "white"
     | "glass"
+    | "glass-purple"
+    | "glass-green"
     | "glass-sky"
     | "teal"
     | "outline"
@@ -36,23 +40,31 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        "bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-sm shadow-sky-500/25 border border-sky-400/40 focus-visible:ring-sky-400",
+        "bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-sm shadow-purple-600/25 border border-purple-500/40 focus-visible:ring-purple-400",
+      purple:
+        "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold shadow-sm shadow-purple-600/25 border border-purple-500/40 focus-visible:ring-purple-400",
+      green:
+        "bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-bold shadow-sm shadow-emerald-600/25 border border-emerald-500/40 focus-visible:ring-emerald-400",
       sky:
-        "bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-bold shadow-sm shadow-sky-500/25 border border-sky-400/40 focus-visible:ring-sky-400",
+        "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold shadow-sm shadow-purple-600/25 border border-purple-500/40 focus-visible:ring-purple-400",
       white:
-        "bg-white hover:bg-slate-50 text-slate-800 font-semibold shadow-xs border border-slate-200/90 focus-visible:ring-slate-300",
+        "bg-white dark:bg-obsidian-900 hover:bg-slate-50 dark:hover:bg-obsidian-800 text-slate-800 dark:text-white font-semibold shadow-xs border border-slate-200/90 dark:border-white/10 focus-visible:ring-purple-400",
       glass:
-        "bg-white/85 hover:bg-white text-slate-800 backdrop-blur-xl border border-slate-200/90 hover:border-sky-400 shadow-2xs focus-visible:ring-sky-400",
+        "bg-white/85 dark:bg-obsidian-900/80 hover:bg-white dark:hover:bg-obsidian-850 text-slate-800 dark:text-white backdrop-blur-xl border border-slate-200/90 dark:border-white/10 hover:border-purple-400 shadow-2xs focus-visible:ring-purple-400",
+      "glass-purple":
+        "bg-purple-50/80 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 backdrop-blur-xl border border-purple-200 dark:border-purple-800/50 shadow-2xs focus-visible:ring-purple-400",
+      "glass-green":
+        "bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 backdrop-blur-xl border border-emerald-200 dark:border-emerald-800/50 shadow-2xs focus-visible:ring-emerald-400",
       "glass-sky":
-        "bg-sky-50/80 hover:bg-sky-100 text-sky-700 hover:text-sky-800 backdrop-blur-xl border border-sky-200 hover:border-sky-300 shadow-2xs focus-visible:ring-sky-400",
+        "bg-purple-50/80 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 backdrop-blur-xl border border-purple-200 dark:border-purple-800/50 shadow-2xs focus-visible:ring-purple-400",
       secondary:
-        "bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 shadow-2xs focus-visible:ring-slate-400",
+        "bg-slate-100 dark:bg-obsidian-800 hover:bg-slate-200 dark:hover:bg-obsidian-750 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10 shadow-2xs focus-visible:ring-slate-400",
       teal:
-        "bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 text-white shadow-2xs border border-teal-500/40 focus-visible:ring-teal-400",
+        "bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white shadow-2xs border border-emerald-500/40 focus-visible:ring-emerald-400",
       outline:
-        "border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 focus-visible:ring-slate-300 shadow-2xs",
+        "border border-slate-300 dark:border-white/15 bg-white dark:bg-obsidian-900 hover:bg-slate-50 dark:hover:bg-obsidian-800 text-slate-700 dark:text-slate-200 focus-visible:ring-purple-400 shadow-2xs",
       ghost:
-        "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 focus-visible:ring-slate-300",
+        "bg-transparent hover:bg-slate-100 dark:hover:bg-obsidian-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus-visible:ring-purple-400",
       danger:
         "bg-red-600 hover:bg-red-700 text-white shadow-2xs border border-red-500/40 focus-visible:ring-red-400",
     };

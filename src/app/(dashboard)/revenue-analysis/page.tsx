@@ -68,24 +68,24 @@ export default function RevenueAnalysisPage() {
   return (
     <div className="space-y-6 pb-16">
       {/* Top Banner */}
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 bg-white/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-black text-slate-900 flex items-center gap-2.5 tracking-tight">
-              <TrendingUp className="h-5 w-5 text-sky-600" />
+            <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2.5 tracking-tight">
+              <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Revenue Analysis & Top-Line Performance
             </h1>
-            <Badge variant="sky" className="text-[10px]">
-              LIVE DATABASE
+            <Badge variant="purple" className="text-[10px] font-bold">
+              Stage 2
             </Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Deterministic accounting revenue analysis derived strictly from recognized operating turnover.
           </p>
         </div>
 
-        <Button variant="glass-sky" size="sm" onClick={fetchRevenueData}>
-          <RefreshCw className="h-3.5 w-3.5 mr-1.5 text-sky-400" />
+        <Button variant="glass-purple" size="sm" onClick={fetchRevenueData} className="font-semibold">
+          <RefreshCw className="h-3.5 w-3.5 mr-1.5 text-purple-600 dark:text-purple-400" />
           Refresh Analysis
         </Button>
       </div>

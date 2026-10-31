@@ -9,8 +9,8 @@ interface LogoProps {
 
 /**
  * FinOS Bespoke Identity Logo Mark & Wordmark
- * Precision handcrafted geometric monogram combining the letter "F"
- * with an ascending financial momentum node and glassmorphic depth.
+ * Handcrafted geometric monogram combining the letter "F"
+ * with an ascending emerald growth node and purple/white glass depth.
  */
 export function FinOSLogo({
   size = "md",
@@ -18,7 +18,6 @@ export function FinOSLogo({
   className = "",
   variant = "default",
 }: LogoProps) {
-  // Size dimensions for the icon mark
   const iconDimensions = {
     sm: { width: 28, height: 28 },
     md: { width: 36, height: 36 },
@@ -47,42 +46,48 @@ export function FinOSLogo({
         className="relative shrink-0 group"
         style={{ width: iconDimensions.width, height: iconDimensions.height }}
       >
-        {/* Soft Ambient SkyBlue Glow */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-sky-500/40 via-sky-400/20 to-blue-600/30 rounded-2xl blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Soft Ambient Purple Glow */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/35 via-purple-400/20 to-emerald-500/25 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-300" />
 
         {/* Master SVG Vector */}
         <svg
           viewBox="0 0 48 48"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="relative w-full h-full drop-shadow-[0_4px_12px_rgba(14,165,233,0.3)] transition-transform duration-200 group-hover:scale-[1.03]"
+          className="relative w-full h-full drop-shadow-[0_4px_12px_rgba(147,51,234,0.3)] transition-transform duration-200 group-hover:scale-[1.03]"
         >
           <defs>
-            {/* Primary SkyBlue Linear Gradient */}
-            <linearGradient id="finSkyPrimary" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#38BDF8" />
-              <stop offset="50%" stopColor="#0EA5E9" />
-              <stop offset="100%" stopColor="#0284C7" />
+            {/* Primary Purple Linear Gradient */}
+            <linearGradient id="finPurplePrimary" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#c084fc" />
+              <stop offset="50%" stopColor="#9333ea" />
+              <stop offset="100%" stopColor="#6b21a8" />
+            </linearGradient>
+
+            {/* Growth Emerald Accent Gradient */}
+            <linearGradient id="finEmeraldGrowth" x1="28" y1="12" x2="40" y2="24" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#34d399" />
+              <stop offset="100%" stopColor="#059669" />
             </linearGradient>
 
             {/* Frosted White Glass Gradient */}
             <linearGradient id="finGlassSheen" x1="12" y1="8" x2="36" y2="40" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
-              <stop offset="60%" stopColor="#E0F2FE" stopOpacity="0.75" />
-              <stop offset="100%" stopColor="#BAE6FD" stopOpacity="0.4" />
+              <stop offset="60%" stopColor="#F3E8FF" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#E9D5FF" stopOpacity="0.5" />
             </linearGradient>
 
             {/* Deep Glass Background Fill */}
             <linearGradient id="finBackdrop" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#0B1B36" />
-              <stop offset="100%" stopColor="#050C1A" />
+              <stop offset="0%" stopColor="#1e1035" />
+              <stop offset="100%" stopColor="#0a0514" />
             </linearGradient>
 
             {/* Crisp 1px Outer Border Gradient */}
             <linearGradient id="finBorderSheen" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.8" />
-              <stop offset="40%" stopColor="#FFFFFF" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.15" />
+              <stop offset="0%" stopColor="#c084fc" stopOpacity="0.8" />
+              <stop offset="40%" stopColor="#FFFFFF" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0.5" />
             </linearGradient>
           </defs>
 
@@ -98,11 +103,11 @@ export function FinOSLogo({
             strokeWidth="1.5"
           />
 
-          {/* Subtle Grid / Chart Texture Accent */}
+          {/* Subtle Grid Accent */}
           <path
             d="M8 38H40M8 30H40M8 22H40M8 14H40"
-            stroke="#38BDF8"
-            strokeOpacity="0.06"
+            stroke="#c084fc"
+            strokeOpacity="0.08"
             strokeWidth="1"
           />
 
@@ -114,7 +119,7 @@ export function FinOSLogo({
             width="6.5"
             height="26"
             rx="3.25"
-            fill="url(#finSkyPrimary)"
+            fill="url(#finPurplePrimary)"
           />
 
           {/* 2. Top Forward-Leaning Horizontal Bar (Vision & Horizon) */}
@@ -123,21 +128,20 @@ export function FinOSLogo({
             fill="url(#finGlassSheen)"
           />
 
-          {/* 3. Middle Dynamic Crossbar + Ascending Financial Node */}
+          {/* 3. Middle Dynamic Crossbar */}
           <path
             d="M14 22.5H27C28.3807 22.5 29.5 23.6193 29.5 25C29.5 26.3807 28.3807 27.5 27 27.5H14V22.5Z"
-            fill="url(#finSkyPrimary)"
+            fill="url(#finPurplePrimary)"
           />
 
-          {/* 4. Ascending Delta Accent (Growth Arrow Tip) */}
+          {/* 4. Ascending Emerald Growth Delta */}
           <path
-            d="M30 19.5L36.5 14L33 23L30 19.5Z"
-            fill="#FFFFFF"
-            opacity="0.9"
+            d="M30 19.5L37 13.5L33.5 23L30 19.5Z"
+            fill="url(#finEmeraldGrowth)"
           />
 
-          {/* Precision Light Reflection Spot */}
-          <circle cx="36.5" cy="14" r="1.5" fill="#FFFFFF" />
+          {/* Precision Emerald Node Spot */}
+          <circle cx="37" cy="13.5" r="1.5" fill="#34d399" />
         </svg>
       </div>
 
@@ -146,17 +150,17 @@ export function FinOSLogo({
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5 leading-none">
             <span
-              className={`font-black tracking-tight text-white ${textSizeClasses}`}
+              className={`font-black tracking-tight text-slate-900 dark:text-white ${textSizeClasses}`}
               style={{ letterSpacing: "-0.03em" }}
             >
-              Fin<span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-sky-300 to-white">OS</span>
+              Fin<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-purple-500 to-emerald-500">OS</span>
             </span>
-            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-400/30">
+            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-400/30">
               PROD
             </span>
           </div>
           <span
-            className={`font-bold text-sky-400/80 uppercase mt-1 leading-none ${subtextSizeClasses}`}
+            className={`font-bold text-purple-600/90 dark:text-purple-400/80 uppercase mt-1 leading-none ${subtextSizeClasses}`}
           >
             Financial Intelligence
           </span>
@@ -176,26 +180,30 @@ export function FinOSIcon({ size = 32, className = "" }: { size?: number; classN
         viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full drop-shadow-[0_2px_8px_rgba(14,165,233,0.35)]"
+        className="w-full h-full drop-shadow-[0_2px_8px_rgba(147,51,234,0.35)]"
       >
         <defs>
-          <linearGradient id="finIconSky" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#38BDF8" />
-            <stop offset="50%" stopColor="#0EA5E9" />
-            <stop offset="100%" stopColor="#0284C7" />
+          <linearGradient id="finIconPurple" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#c084fc" />
+            <stop offset="50%" stopColor="#9333ea" />
+            <stop offset="100%" stopColor="#6b21a8" />
+          </linearGradient>
+          <linearGradient id="finIconEmerald" x1="28" y1="12" x2="40" y2="24" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#34d399" />
+            <stop offset="100%" stopColor="#059669" />
           </linearGradient>
           <linearGradient id="finIconGlass" x1="12" y1="8" x2="36" y2="40" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
-            <stop offset="100%" stopColor="#BAE6FD" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#E9D5FF" stopOpacity="0.5" />
           </linearGradient>
           <linearGradient id="finIconBg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#0B1B36" />
-            <stop offset="100%" stopColor="#050C1A" />
+            <stop offset="0%" stopColor="#1e1035" />
+            <stop offset="100%" stopColor="#0a0514" />
           </linearGradient>
           <linearGradient id="finIconBorder" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.8" />
-            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#c084fc" stopOpacity="0.8" />
+            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#10b981" stopOpacity="0.5" />
           </linearGradient>
         </defs>
 
@@ -216,7 +224,7 @@ export function FinOSIcon({ size = 32, className = "" }: { size?: number; classN
           width="6.5"
           height="26"
           rx="3.25"
-          fill="url(#finIconSky)"
+          fill="url(#finIconPurple)"
         />
 
         <path
@@ -226,17 +234,15 @@ export function FinOSIcon({ size = 32, className = "" }: { size?: number; classN
 
         <path
           d="M14 22.5H27C28.3807 22.5 29.5 23.6193 29.5 25C29.5 26.3807 28.3807 27.5 27 27.5H14V22.5Z"
-          fill="url(#finIconSky)"
+          fill="url(#finIconPurple)"
         />
 
         <path
-          d="M30 19.5L36.5 14L33 23L30 19.5Z"
-          fill="#FFFFFF"
-          opacity="0.9"
+          d="M30 19.5L37 13.5L33.5 23L30 19.5Z"
+          fill="url(#finIconEmerald)"
         />
-        <circle cx="36.5" cy="14" r="1.5" fill="#FFFFFF" />
+        <circle cx="37" cy="13.5" r="1.5" fill="#34d399" />
       </svg>
     </div>
   );
 }
-

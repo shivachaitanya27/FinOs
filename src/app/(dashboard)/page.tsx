@@ -154,21 +154,24 @@ export default function DashboardOverviewPage() {
   return (
     <div className="space-y-6 pb-12">
       {/* Top Banner: Business Info + Demo Badge + Filters + Quick Actions */}
-      <div className="relative z-20 flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 bg-white/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600">
+      <div className="relative z-20 flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
               {business?.name || "BharatTech Solutions"}
             </h1>
-            <Badge variant="sky" className="gap-1.5 font-bold px-2.5 py-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-sky-600 animate-pulse" />
+            <Badge variant="purple" className="font-bold text-[10px]">
+              Stage 1
+            </Badge>
+            <Badge variant="green" className="gap-1.5 font-bold px-2.5 py-0.5 text-[10px]">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
               DEMO SANDBOX – Live Ledger
             </Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
-            <span className="text-sky-700 font-mono">GSTIN: {business?.taxId || "29AABCU9603R1ZM"}</span>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2 font-medium">
+            <span className="text-purple-700 dark:text-purple-300 font-mono">GSTIN: {business?.taxId || "29AABCU9603R1ZM"}</span>
             <span>•</span>
-            <span className="text-slate-600">FY 2024–25 (Ind AS)</span>
+            <span className="text-slate-600 dark:text-slate-400">FY 2024–25 (Ind AS)</span>
           </p>
         </div>
 

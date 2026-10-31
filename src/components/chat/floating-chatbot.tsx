@@ -101,14 +101,17 @@ export function FloatingChatbot() {
     }
   }, [isOpen]);
 
-  const handleSendMessage = async (textToSend?: string) => {
-    const text = (textToSend || inputValue).trim();
-    if (!text || isLoading) return;
+  const handleSendMessage = async (customPrompt?: string) => {
+    const textToSend = customPrompt || inputValue;
+    if (!textToSend.trim() || isLoading) return;
 
-    // Optimistically add user message
-    const userMsg: Message = { role: "user", content: text };
-    setMessages((prev) => [...prev, userMsg]);
-    setInputValue("");
+    const userMessage: Message = {
+      role: "user",
+      content: textToSend.trim(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    if (!customPrompt) setInputValue("");
     setIsLoading(true);
 
     try {
@@ -116,94 +119,45 @@ export function FloatingChatbot() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: text,
+          message: textToSend.trim(),
           conversationId: conversationId || undefined,
         }),
       });
 
       const data = await res.json();
-      if (data.success) {
-        if (!conversationId && data.conversationId) {
+
+      if (data.success && data.response) {
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: data.response,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+
+        if (data.conversationId) {
           setConversationId(data.conversationId);
           loadConversations();
         }
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: data.message.id,
-            role: "assistant",
-            content: data.message.content,
-            createdAt: data.message.createdAt,
-          },
-        ]);
       } else {
         setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
-            content: `⚠️ **Unable to complete request:** ${data.error || "Financial intelligence service encountered an issue. Please try again."}`,
+            content: `⚠️ ${
+              data.error || "I could not generate an answer. Please verify your query or try again."
+            }`,
           },
         ]);
       }
     } catch (err: any) {
-      console.error("Chat error:", err);
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: `⚠️ **Connection Error:** Could not reach the FinOS backend engine. Please check your connection.`,
+          content: "❌ Connection error while querying the FinOS intelligence engine. Please retry.",
         },
       ]);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const startNewConversation = () => {
-    setConversationId(null);
-    setShowHistory(false);
-    setMessages([
-      {
-        role: "assistant",
-        content: `👋 **New Financial Consultation Started**\n\nAsk me anything regarding your revenue, category spend surges, unmatched reconciliation items, or liquidity runway.`,
-      },
-    ]);
-  };
-
-  const selectConversation = async (convId: string) => {
-    try {
-      setIsLoading(true);
-      const res = await fetch(`/api/ai/conversations/${convId}`);
-      const data = await res.json();
-      if (data.success && data.conversation) {
-        setConversationId(convId);
-        setMessages(
-          data.conversation.messages.map((m: any) => ({
-            id: m.id,
-            role: m.role,
-            content: m.content,
-            createdAt: m.createdAt,
-          }))
-        );
-        setShowHistory(false);
-      }
-    } catch (err) {
-      console.error("Failed to load conversation:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const deleteConversation = async (convId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await fetch(`/api/ai/conversations/${convId}`, { method: "DELETE" });
-      setConversations((prev) => prev.filter((c) => c.id !== convId));
-      if (conversationId === convId) {
-        startNewConversation();
-      }
-    } catch (err) {
-      console.error("Delete conversation error:", err);
     }
   };
 
@@ -214,56 +168,130 @@ export function FloatingChatbot() {
     }
   };
 
-  // Simple Markdown-to-HTML parser for bullet lists, bold text, and headers
+  const startNewConversation = () => {
+    setConversationId(null);
+    setMessages([
+      {
+        role: "assistant",
+        content: `👋 **New session started.**\n\nAsk me about revenues, expense spikes, duplicate records, runway projections, or reconciliation items.`,
+      },
+    ]);
+    setShowHistory(false);
+  };
+
+  const selectConversation = async (id: string) => {
+    try {
+      setIsLoading(true);
+      setShowHistory(false);
+      const res = await fetch(`/api/ai/conversations/${id}`);
+      const data = await res.json();
+      if (data.success && data.conversation) {
+        setConversationId(id);
+        const parsedMsgs: Message[] = (data.conversation.messages || []).map((m: any) => ({
+          role: m.role.toLowerCase() as "user" | "assistant",
+          content: m.content,
+        }));
+        setMessages(parsedMsgs);
+      }
+    } catch (err) {
+      console.error("Failed to load conversation history:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteConversation = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`/api/ai/conversations/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setConversations((prev) => prev.filter((c) => c.id !== id));
+        if (conversationId === id) {
+          startNewConversation();
+        }
+      }
+    } catch (err) {
+      console.error("Failed to delete conversation:", err);
+    }
+  };
+
+  // Basic markdown parser for bold, bullet points, headers
   const renderFormattedContent = (content: string) => {
     const lines = content.split("\n");
     return (
-      <div className="space-y-1.5 text-xs leading-relaxed">
+      <div className="space-y-1.5 leading-relaxed">
         {lines.map((line, i) => {
-          const trimmed = line.trim();
-          if (!trimmed) return <div key={i} className="h-1" />;
+          if (!line.trim()) return <div key={i} className="h-1" />;
 
-          // Header ###
-          if (trimmed.startsWith("### ")) {
+          // Headers
+          if (line.startsWith("### ")) {
             return (
-              <h4 key={i} className="font-bold text-white text-sm pt-1 pb-0.5 text-finteal-300">
-                {trimmed.replace("### ", "")}
+              <h4 key={i} className="font-bold text-xs text-purple-900 dark:text-purple-300 mt-2 mb-1">
+                {line.replace("### ", "")}
               </h4>
             );
           }
-
-          // Bullet point * or -
-          if (trimmed.startsWith("* ") || trimmed.startsWith("- ") || trimmed.startsWith("• ")) {
-            const bulletText = trimmed.replace(/^[\*\-•]\s*/, "");
+          if (line.startsWith("## ")) {
             return (
-              <div key={i} className="flex items-start gap-1.5 pl-1 text-slate-200">
-                <span className="text-finteal-400 font-bold">•</span>
-                <span dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(bulletText) }} />
+              <h3 key={i} className="font-bold text-sm text-purple-950 dark:text-purple-200 mt-2 mb-1">
+                {line.replace("## ", "")}
+              </h3>
+            );
+          }
+
+          // Bullet points
+          if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
+            const clean = line.trim().substring(2);
+            return (
+              <div key={i} className="flex items-start gap-1.5 text-xs text-slate-700 dark:text-slate-300 ml-1">
+                <span className="text-purple-600 dark:text-purple-400 font-bold shrink-0">•</span>
+                <span>{parseBold(clean)}</span>
               </div>
             );
           }
 
-          // Blockquote >
-          if (trimmed.startsWith("> ")) {
+          // Numbered list
+          if (/^\d+\.\s/.test(line.trim())) {
             return (
-              <div key={i} className="p-2 rounded-lg bg-slate-900/80 border-l-2 border-finteal-400 text-slate-300 text-[11px] my-1">
-                <span dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(trimmed.replace("> ", "")) }} />
+              <div key={i} className="flex items-start gap-1.5 text-xs text-slate-700 dark:text-slate-300 ml-1">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">
+                  {line.trim().split(".")[0]}.
+                </span>
+                <span>{parseBold(line.trim().replace(/^\d+\.\s/, ""))}</span>
               </div>
             );
           }
 
+          // Normal paragraph
           return (
-            <p key={i} className="text-slate-200" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(line) }} />
+            <p key={i} className="text-xs text-slate-700 dark:text-slate-300">
+              {parseBold(line)}
+            </p>
           );
         })}
       </div>
     );
   };
 
-  const formatInlineMarkdown = (text: string) => {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-white">$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em class="text-finteal-300">$1</em>');
+  const parseBold = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return (
+          <strong key={index} className="font-bold text-slate-900 dark:text-white">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      if (part.startsWith("*") && part.endsWith("*")) {
+        return (
+          <em key={index} className="text-slate-600 dark:text-slate-400 italic">
+            {part.slice(1, -1)}
+          </em>
+        );
+      }
+      return part;
+    });
   };
 
   return (
@@ -274,15 +302,15 @@ export function FloatingChatbot() {
           <button
             onClick={() => setIsOpen(true)}
             aria-label="Open FinOS AI Assistant"
-            className="group relative flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-tr from-sky-400 via-sky-500 to-blue-600 p-0.5 shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-sky-500/30"
+            className="group relative flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-tr from-purple-600 via-purple-500 to-emerald-500 p-0.5 shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-purple-600/30"
           >
-            <div className="h-full w-full bg-white rounded-full flex items-center justify-center group-hover:bg-sky-50 transition-colors shadow-inner">
-              <Bot className="h-6 w-6 text-sky-600 group-hover:text-sky-700 transition-colors" />
+            <div className="h-full w-full bg-white dark:bg-obsidian-900 rounded-full flex items-center justify-center group-hover:bg-purple-50 dark:group-hover:bg-obsidian-850 transition-colors shadow-inner">
+              <Bot className="h-6 w-6 text-purple-600 dark:text-purple-400 group-hover:text-purple-700 transition-colors" />
             </div>
             {/* Live pulsing dot */}
             <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-sky-500 border-2 border-white"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-obsidian-950"></span>
             </span>
           </button>
         ) : null}
@@ -291,24 +319,24 @@ export function FloatingChatbot() {
       {/* Main Chatbot Window */}
       {isOpen && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex flex-col bg-white/95 border border-slate-200/90 rounded-3xl shadow-2xl backdrop-blur-2xl transition-all duration-200 overflow-hidden print:hidden before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-3xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600 ${
+          className={`fixed bottom-6 right-6 z-50 flex flex-col bg-white/98 dark:bg-obsidian-900/98 border border-purple-200/80 dark:border-white/10 rounded-3xl shadow-2xl backdrop-blur-2xl transition-all duration-200 overflow-hidden print:hidden ${
             isMinimized
               ? "w-80 h-14"
               : "w-[92vw] sm:w-[420px] h-[580px] max-h-[88vh]"
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-3.5 border-b border-slate-100 bg-slate-50/90 select-none">
+          <div className="flex items-center justify-between p-3.5 border-b border-slate-100 dark:border-white/10 bg-purple-50/70 dark:bg-obsidian-850/80 select-none">
             <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-xl bg-gradient-to-tr from-sky-400 to-sky-600 text-white shadow-sm shadow-sky-500/25">
+              <div className="p-1.5 rounded-xl bg-gradient-to-tr from-purple-600 to-emerald-500 text-white shadow-sm shadow-purple-600/25">
                 <Bot className="h-4 w-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-xs text-slate-900">FinOS AI Assistant</span>
-                  <Badge variant="sky" className="text-[9px] px-1.5 py-0 font-bold">Stage 5</Badge>
+                  <span className="font-bold text-xs text-slate-900 dark:text-white">FinOS AI Assistant</span>
+                  <Badge variant="purple" className="text-[9px] px-1.5 py-0 font-bold">Stage 5</Badge>
                 </div>
-                <p className="text-[10px] text-sky-700 font-medium">Verified Financial Intelligence</p>
+                <p className="text-[10px] text-purple-700 dark:text-purple-400 font-medium">Verified Financial Intelligence</p>
               </div>
             </div>
 
@@ -316,8 +344,8 @@ export function FloatingChatbot() {
               <button
                 onClick={() => setShowHistory(!showHistory)}
                 title="Conversation History"
-                className={`p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors ${
-                  showHistory ? "bg-slate-100 text-sky-700" : ""
+                className={`p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-white dark:hover:bg-obsidian-800 transition-colors ${
+                  showHistory ? "bg-white dark:bg-obsidian-800 text-purple-700 dark:text-purple-300" : ""
                 }`}
               >
                 <History className="h-3.5 w-3.5" />
@@ -325,21 +353,21 @@ export function FloatingChatbot() {
               <button
                 onClick={startNewConversation}
                 title="New Conversation"
-                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-white dark:hover:bg-obsidian-800 transition-colors"
               >
                 <PlusCircle className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
                 title={isMinimized ? "Maximize" : "Minimize"}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-white dark:hover:bg-obsidian-800 transition-colors"
               >
                 {isMinimized ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 title="Close"
-                className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -350,16 +378,16 @@ export function FloatingChatbot() {
             <>
               {/* History Drawer Overlay */}
               {showHistory ? (
-                <div className="flex-1 flex flex-col bg-slate-50 p-3 space-y-2 overflow-y-auto">
-                  <div className="flex items-center justify-between pb-1 border-b border-slate-200">
-                    <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                <div className="flex-1 flex flex-col bg-slate-50 dark:bg-obsidian-950 p-3 space-y-2 overflow-y-auto">
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Saved Conversations
                     </span>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={startNewConversation}
-                      className="text-[10px] h-6 px-2 text-sky-600 hover:text-sky-700"
+                      className="text-[10px] h-6 px-2 text-purple-600 dark:text-purple-400 hover:text-purple-700"
                     >
                       + Start New
                     </Button>
@@ -376,13 +404,13 @@ export function FloatingChatbot() {
                         onClick={() => selectConversation(c.id)}
                         className={`p-2.5 rounded-xl border text-left cursor-pointer transition-colors group flex items-start justify-between gap-2 ${
                           c.id === conversationId
-                            ? "bg-sky-50 border-sky-300 shadow-2xs"
-                            : "bg-white border-slate-200 hover:bg-slate-50"
+                            ? "bg-purple-50 dark:bg-purple-950/40 border-purple-300 dark:border-purple-700/60 shadow-2xs"
+                            : "bg-white dark:bg-obsidian-900 border-slate-200 dark:border-white/10 hover:bg-purple-50/40 dark:hover:bg-obsidian-850"
                         }`}
                       >
                         <div className="min-w-0 flex-1">
-                          <div className="font-semibold text-xs text-slate-900 truncate">{c.title}</div>
-                          <div className="text-[10px] text-slate-500 truncate mt-0.5">{c.lastMessage}</div>
+                          <div className="font-semibold text-xs text-slate-900 dark:text-white truncate">{c.title}</div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{c.lastMessage}</div>
                         </div>
                         <button
                           onClick={(e) => deleteConversation(c.id, e)}
@@ -397,7 +425,7 @@ export function FloatingChatbot() {
                 </div>
               ) : (
                 /* Main Message Stream */
-                <div className="flex-1 flex flex-col min-h-0 bg-white">
+                <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-obsidian-900">
                   <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
                     {messages.map((msg, idx) => (
                       <div
@@ -407,7 +435,7 @@ export function FloatingChatbot() {
                         }`}
                       >
                         {msg.role === "assistant" && (
-                          <div className="h-6 w-6 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700 flex-shrink-0 mt-0.5">
+                          <div className="h-6 w-6 rounded-lg bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/40 flex items-center justify-center text-purple-700 dark:text-purple-300 flex-shrink-0 mt-0.5">
                             <Bot className="h-3.5 w-3.5" />
                           </div>
                         )}
@@ -415,8 +443,8 @@ export function FloatingChatbot() {
                         <div
                           className={`max-w-[85%] rounded-2xl p-3 shadow-xs ${
                             msg.role === "user"
-                              ? "bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-tr-none text-xs"
-                              : "bg-slate-50 border border-slate-200 text-slate-800 rounded-tl-none text-xs"
+                              ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-tr-none text-xs font-medium"
+                              : "bg-slate-50 dark:bg-obsidian-850 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 rounded-tl-none text-xs"
                           }`}
                         >
                           {msg.role === "assistant"
@@ -427,15 +455,15 @@ export function FloatingChatbot() {
                     ))}
 
                     {isLoading && (
-                      <div className="flex gap-2.5 items-center text-xs text-slate-500">
-                        <div className="h-6 w-6 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700 flex-shrink-0">
+                      <div className="flex gap-2.5 items-center text-xs text-slate-500 dark:text-slate-400">
+                        <div className="h-6 w-6 rounded-lg bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/40 flex items-center justify-center text-purple-700 dark:text-purple-300 flex-shrink-0">
                           <Bot className="h-3.5 w-3.5 animate-pulse" />
                         </div>
-                        <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 text-xs flex items-center gap-2">
+                        <div className="p-3 rounded-2xl bg-slate-50 dark:bg-obsidian-850 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 text-xs flex items-center gap-2">
                           <span className="flex gap-1">
-                            <span className="h-1.5 w-1.5 rounded-full bg-sky-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-                            <span className="h-1.5 w-1.5 rounded-full bg-sky-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-                            <span className="h-1.5 w-1.5 rounded-full bg-sky-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+                            <span className="h-1.5 w-1.5 rounded-full bg-purple-600 animate-bounce" style={{ animationDelay: "0ms" }} />
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "150ms" }} />
+                            <span className="h-1.5 w-1.5 rounded-full bg-purple-600 animate-bounce" style={{ animationDelay: "300ms" }} />
                           </span>
                           <span>Consulting verified ledger records...</span>
                         </div>
@@ -446,9 +474,9 @@ export function FloatingChatbot() {
 
                   {/* Suggested Question Chips (visible if few messages) */}
                   {messages.length <= 3 && !isLoading && (
-                    <div className="p-2 border-t border-slate-100 bg-slate-50/70">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-sky-700 px-1 mb-1.5 flex items-center gap-1">
-                        <Sparkles className="h-3 w-3 text-sky-600" />
+                    <div className="p-2 border-t border-slate-100 dark:border-white/10 bg-slate-50/70 dark:bg-obsidian-850/70">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 px-1 mb-1.5 flex items-center gap-1">
+                        <Sparkles className="h-3 w-3 text-purple-600 dark:text-purple-400" />
                         <span>Suggested Financial Queries:</span>
                       </div>
                       <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px]">
@@ -456,7 +484,7 @@ export function FloatingChatbot() {
                           <button
                             key={idx}
                             onClick={() => handleSendMessage(q)}
-                            className="whitespace-nowrap px-3 py-1 rounded-full bg-white hover:bg-sky-50 border border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-800 transition-colors shadow-2xs font-medium"
+                            className="whitespace-nowrap px-3 py-1 rounded-full bg-white dark:bg-obsidian-900 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-slate-200 dark:border-white/10 hover:border-purple-300 text-slate-700 dark:text-slate-300 hover:text-purple-800 dark:hover:text-purple-200 transition-colors shadow-2xs font-medium"
                           >
                             {q}
                           </button>
@@ -466,7 +494,7 @@ export function FloatingChatbot() {
                   )}
 
                   {/* Input Box Footer */}
-                  <div className="p-3 border-t border-slate-100 bg-white">
+                  <div className="p-3 border-t border-slate-100 dark:border-white/10 bg-white dark:bg-obsidian-900">
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
@@ -482,23 +510,23 @@ export function FloatingChatbot() {
                         onKeyDown={handleKeyDown}
                         placeholder="Ask about revenue, expense spikes, runway..."
                         disabled={isLoading}
-                        className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 disabled:opacity-50 transition-colors font-medium"
+                        className="flex-1 bg-slate-50 dark:bg-obsidian-850 border border-slate-300 dark:border-white/15 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50 transition-colors font-medium"
                       />
                       <Button
                         type="submit"
                         size="sm"
                         disabled={isLoading || !inputValue.trim()}
-                        className="h-9 w-9 p-0 rounded-xl bg-gradient-to-tr from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-bold shadow-sm shadow-sky-500/25 disabled:opacity-40"
+                        className="h-9 w-9 p-0 rounded-xl bg-gradient-to-tr from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold shadow-sm shadow-purple-600/25 disabled:opacity-40"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
                     </form>
-                    <div className="flex items-center justify-between text-[10px] text-slate-500 mt-2 px-1">
-                      <span className="text-sky-700 font-medium">Verified deterministic calculations</span>
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 mt-2 px-1">
+                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">Verified deterministic calculations</span>
                       <button
                         type="button"
                         onClick={startNewConversation}
-                        className="hover:text-sky-700 font-medium transition-colors"
+                        className="hover:text-purple-700 dark:hover:text-purple-400 font-medium transition-colors"
                       >
                         Clear Chat
                       </button>
@@ -513,4 +541,3 @@ export function FloatingChatbot() {
     </>
   );
 }
-

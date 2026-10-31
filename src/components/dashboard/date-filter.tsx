@@ -70,25 +70,25 @@ export function DateFilter({ activeFilter, onChange }: DateFilterProps) {
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
-      {/* Filter trigger button - Glassmorphic Light */}
+      {/* Filter trigger button - Glassmorphic */}
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/90 border border-slate-200/90 hover:border-sky-400 text-xs font-semibold text-slate-800 hover:text-sky-700 transition-all shadow-sm hover:shadow backdrop-blur-xl active:scale-[0.98]"
+        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/90 dark:bg-obsidian-900/90 border border-slate-200/90 dark:border-white/10 hover:border-purple-400 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:text-purple-700 dark:hover:text-purple-300 transition-all shadow-sm hover:shadow backdrop-blur-xl active:scale-[0.98]"
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <Calendar className="h-3.5 w-3.5 text-sky-600" />
+        <Calendar className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
         <span>{filterLabels[activeFilter]}</span>
-        <ChevronDown className={cn("h-3.5 w-3.5 text-slate-400 ml-1 transition-transform", isOpen && "rotate-180 text-sky-600")} />
+        <ChevronDown className={cn("h-3.5 w-3.5 text-slate-400 ml-1 transition-transform", isOpen && "rotate-180 text-purple-600 dark:text-purple-400")} />
       </button>
 
-      {/* Dropdown Menu - Frosted Glass Light */}
+      {/* Dropdown Menu - Frosted Glass */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-2xl backdrop-blur-2xl z-[100] animate-in fade-in zoom-in-95 duration-150">
-          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-sky-700 border-b border-slate-100 flex items-center justify-between">
+        <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/98 dark:bg-obsidian-900/98 p-1.5 shadow-2xl backdrop-blur-2xl z-[100] animate-in fade-in zoom-in-95 duration-150">
+          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-purple-700 dark:text-purple-400 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
             <span>Select Time Horizon</span>
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-sky-50 text-sky-600 font-mono">Live</span>
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 font-mono">Live</span>
           </div>
           <div className="pt-1 space-y-0.5">
             {(
@@ -108,13 +108,13 @@ export function DateFilter({ activeFilter, onChange }: DateFilterProps) {
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 text-xs rounded-xl font-medium transition-colors text-left",
                   activeFilter === opt
-                    ? "bg-sky-50 text-sky-700 font-bold border-l-2 border-sky-500 shadow-xs"
-                    : "text-slate-700 hover:bg-slate-50 hover:text-sky-700"
+                    ? "bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200 font-bold border-l-2 border-purple-600 shadow-xs"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-obsidian-800 hover:text-purple-700 dark:hover:text-purple-300"
                 )}
               >
                 <span>{filterLabels[opt]}</span>
                 {activeFilter === opt && (
-                  <Check className="h-3.5 w-3.5 text-sky-600" />
+                  <Check className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                 )}
               </button>
             ))}
@@ -156,7 +156,7 @@ export function DateFilter({ activeFilter, onChange }: DateFilterProps) {
             />
           </div>
 
-          <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-white/10">
             <Button
               type="button"
               variant="white"
@@ -165,7 +165,7 @@ export function DateFilter({ activeFilter, onChange }: DateFilterProps) {
             >
               Cancel
             </Button>
-            <Button type="submit" variant="sky" size="sm">
+            <Button type="submit" variant="purple" size="sm">
               Apply Date Filter
             </Button>
           </div>

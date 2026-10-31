@@ -402,31 +402,31 @@ export default function DataManagementPage() {
   return (
     <div className="space-y-6 pb-16">
       {/* Top Banner */}
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 bg-white/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-sky-400 before:via-sky-500 before:to-blue-600">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/85 dark:bg-obsidian-900/85 shadow-sm backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-gradient-to-r before:from-purple-600 before:via-purple-500 before:to-emerald-500">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-black text-slate-900 flex items-center gap-2.5 tracking-tight">
-              <Database className="h-5 w-5 text-sky-600" />
+            <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2.5 tracking-tight">
+              <Database className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Financial Data Management & Ingestion
             </h1>
-            <Badge variant="sky" className="font-bold text-[10px]">
-              STAGE 2 ENGINE
+            <Badge variant="purple" className="font-bold text-[10px]">
+              Stage 2
             </Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Import statements from Indian banks, Tally Prime, and Zoho Books with automated mapping, validation, and deterministic metrics.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
-          <Button variant="sky" size="sm" onClick={() => setIsManualModalOpen(true)} className="shadow-sm shadow-sky-500/20 font-semibold">
+          <Button variant="purple" size="sm" onClick={() => setIsManualModalOpen(true)} className="shadow-sm shadow-purple-500/20 font-semibold">
             <PlusCircle className="h-4 w-4 mr-1.5" />
             Manual Entry
           </Button>
 
           <Link href="/transactions">
             <Button variant="glass" size="sm" className="font-semibold">
-              <Layers className="h-4 w-4 mr-1.5 text-sky-600" />
+              <Layers className="h-4 w-4 mr-1.5 text-purple-600 dark:text-purple-400" />
               View Ledger
             </Button>
           </Link>
